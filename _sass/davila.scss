@@ -1,0 +1,99 @@
+/* local customizations */
+
+/*. drag and drop */
+#contents {
+    position: relative;
+}
+
+#contents img {
+    width: 100%;
+    min-height: 250px;
+    background: #efefef;
+}
+output {
+    margin-left: 20px;
+}
+#drop_zone {
+    border: 2px dashed #bbb;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+    color: #bbb;
+    margin: 5px 15px;
+}
+
+#drop_zone.active {
+    background: #efefef;
+}
+
+#file-list {
+    margin: 0 20px;
+}
+.block {
+    position: absolute;
+    display: block;
+    border: 1px solid gray;
+}
+
+.text-content{
+    white-space: nowrap;
+    line-height: 100%;
+    opacity: 0.5;
+}
+.selected {
+     opacity: 1;
+     background: rgba(255,255,255,0.5);
+}
+
+
+/* davila entity diagram */
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+svg.d3, .container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75%;
+    border: 1px solid blue; /* testing */
+}
+
+.container {
+    background-color: #efefef;
+    padding: 10px;
+}
+
+.entity {
+    background-color: white;
+    min-width: 150px;
+    padding: 10px;
+    margin: 2px;
+    position: absolute;
+    border-style: solid;
+    z-index: 4;
+}
+
+/* ... needs transition */
+/* set collapsed entity to solid color */
+.entity.collapsed .fields {
+  display: none;
+}
+
+.fields {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.fields span.type {
+  float: right;
+  margin-left: 10px;
+}
