@@ -18,7 +18,7 @@ Pull requests should be made against develop.
 * Install [jekyll using bundler](https://jekyllrb.com/docs/quickstart/), which is currently
 used for running davila.js and unit tests in the browser: `gem install jekyll bundler`
 
-* Download [nodejs] (https://nodejs.org/en/download/) pkg and install
+* Download [nodejs](https://nodejs.org/en/download/) pkg and install
 
 * Install local npm dependencies for unit testing: `npm install`
 
