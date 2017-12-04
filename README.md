@@ -8,6 +8,17 @@ This repo uses [git-flow](https://github.com/nvie/gitflow) conventions; **master
 contains the most recent release, and work in progress will be on the **develop** branch.
 Pull requests should be made against develop.
 
+# Usage instructions
+
+* Find or generate your schema (currently only supports MySQL).  To export
+  a schema from an existing database: `mysqldump -u root -p --no-data dbname > schema.sql`
+
+* Navigate to [https://princeton-cdh.github.io/davilajs/](https://princeton-cdh.github.io/davilajs/)
+  (current in-progress prototype), and drag your schema onto the drop zone on the page.
+
+* View and interact with a visualization of the entities and relationships
+  in your schema.
+
 
 # Development instructions
 
@@ -24,7 +35,7 @@ used for running davila.js and unit tests in the browser: `gem install jekyll bu
 
 * Run jekyll: `bundle exec jekyll serve`
 
-* Navigate to http://localhost:4000/test/ 
+* Navigate to http://localhost:4000/test/
 
 * if all tests run, then navigate to http://localhost:4000/ to use davilajs
 
