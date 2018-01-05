@@ -40,5 +40,5 @@ function parse(schema) {
     };
 }
 
-
+exports.parse = parse;
 

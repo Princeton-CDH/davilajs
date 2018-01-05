@@ -11,7 +11,9 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^4.0.1"
+    "fs": "0.0.1-security",
+    "mocha": "^4.1.0",
+    "xml2js": "^0.4.19"
   },
   "scripts": {
     "test": "mocha"
