@@ -27,8 +27,6 @@ function parse(schema) {
         relationships.push({'source': match[1], 'target': match[3]})
     }
 */
-    console.log(relationships);
-
   // "relationships": [
     // {"source": "People", "target": "Relationships", "value": 1},
     // {"source": "People", "target": "Nationalities", "value": 1},
@@ -40,5 +38,8 @@ function parse(schema) {
     };
 }
 
-exports.parse = parse;
+// export as node module when running under npm / command line
+if (typeof exports !== 'undefined') {
+    exports.parse = parse;
+}
 
