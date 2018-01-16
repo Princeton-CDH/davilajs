@@ -98,9 +98,8 @@ describe('schema.parse', function() {
         assert.equal(table.fields[3].name, 'source_type_id');
 
   });
-  it('should find table attributes', function() {
+  it('should find table attribute types', function() {
         var info = parse(schema_snippets['footnotes_bibliography']);
-        console.log(info);
         var table = info.entities[0];
         assert.equal(table.fields.length, 4);
         assert.equal(table.fields[0].type, 'int(11)');
