@@ -17,7 +17,9 @@ title: davila.js
 email: cdhdevteam@princeton.edu
 description: >- # this means to ignore newlines until "baseurl:"
   an interactive schema annotation tool
-baseurl: "/davilajs" # the subpath of your site, e.g. /blog
+# NOTE: needs project base url for running on github pages
+# baseurl: "/davilajs" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
 #github_username:  jekyll
