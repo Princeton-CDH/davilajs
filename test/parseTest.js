@@ -1,28 +1,82 @@
-// var chai = require('chai');
+if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
+  // tests running on command-line via mocha
+
+  chai = require('chai');
+  parse = require('../src/parse.js').parse;
+
+  var fs = require('fs'),
+      xml2js = require('xml2js');
+
+  function load_fixture(filename, callback) {
+    // utility method to load fixture files relative to the
+    // directory where this test file is located
+    fs.readFile(__dirname + '/' + filename, function(err, data) {
+      callback(data.toString());
+    });
+  }
+
+
+} else {
+  // tests running in the browser
+
+  function load_fixture(filename, callback) {
+    // utility method to load fixture files
+    $.get( "/test/" + filename, function(data) {
+      callback(data);
+    });
+  }
+}
+
 var assert = chai.assert;
 
-// load fixture data for schema samples to test
+// variables to store fixture data for schema samples to test
 var schema_snippets = {}, derrida_schema;
-
-$.get( "/test/fixtures/schema_snippets.xml", function( data ) {
-  console.log('data');
-  console.log($(data).find('snippet'));
-  var snippets = $(data).find('snippet');
-  console.log(snippets);
-  for (var i = 0; i < snippets.length; i++) {
-    var snippet = $(snippets[i]);
-    schema_snippets[snippet.attr('id')] = snippet.text();
-  }
-});
-
-$.get( "/test/fixtures/derrida_schema.sql", function( data ) {
-  derrida_schema = data;
-});
 
 
 describe('schema.parse', function() {
+
+  before(function(done) {
+    var load_derrida_schema = new Promise(function(resolve, reject) {
+      load_fixture('fixtures/derrida_schema.sql', function( data ) {
+        derrida_schema = data;
+        resolve();
+        });
+    });
+
+    var load_schema_snippets = new Promise(function(resolve, reject) {
+      load_fixture('fixtures/schema_snippets.xml', function(data) {
+
+         // if running on the command line, parse schema snippets from xml fixture
+        if (xml2js) {
+          var parser = new xml2js.Parser();
+          parser.parseString(data, function (err, result) {
+              for (var i = 0; i < result.schema_snippets.snippet.length; i++) {
+                var snippet = result.schema_snippets.snippet[i];
+                schema_snippets[snippet['$'].id] = snippet._;
+              }
+            resolve();
+          });
+
+        // if running in the browser, use jquery to parse snippets from xml fixture
+        } else {
+          var snippets = $(data).find('snippet');
+          for (var i = 0; i < snippets.length; i++) {
+            var snippet = $(snippets[i]);
+            schema_snippets[snippet.attr('id')] = snippet.text();
+          }
+          resolve();
+        }
+      }); // end load fixture
+    }); // end load_schema_snippets
+
+    // run all fixture loading promises, then mark before hook as done
+    Promise.all([load_derrida_schema, load_schema_snippets]).then(function() {
+      done();
+    });
+
+  });
+
   it('should find table name', function() {
-        // var info = parse(sample_schema);
         var info = parse(schema_snippets['django_site']);
         assert.equal(info.entities.length, 1);
         assert.equal(info.entities[0].id, 'django_site');

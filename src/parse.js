@@ -46,15 +46,14 @@ function parse(schema) {
         }
 
     }
-  // "relationships": [
-    // {"source": "People", "target": "Relationships", "value": 1},
-    // {"source": "People", "target": "Nationalities", "value": 1},
-
     return {
         'entities': entities,
         'relationships': relationships
     };
 }
 
-
+// export as node module when running under npm / command line
+if (typeof exports !== 'undefined') {
+    exports.parse = parse;
+}
 
