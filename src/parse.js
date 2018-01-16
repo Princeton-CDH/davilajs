@@ -1,6 +1,25 @@
-var tablename_re = /CREATE\sTABLE\s`(\w+)`[^;]*;/g;
-// var foreign_key_re = /CREATE\sTABLE\s`(\w+)`[^;]*FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/gm;
-var foreign_key_re = /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g;
+/* Parse a schema and return an entity relationship structure in this
+  format:
+{
+    entities: [
+        {id: entity_name, fields: [
+            {name: attr_name, type: type},
+            {name: attr2_name, type: type},
+        ]}
+    ],
+    relationships: [
+        {source: entity1, target: entity2},
+    ]
+}
+
+*/
+
+var mysql_regex = {
+    tablename: /CREATE\sTABLE\s`(\w+)`[^;]*;/g,
+    table_attribute: /^\s+`(\w+)`\s+(\w+[\d()]*)\s(.*),$/gm,
+    foreign_key: /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g
+};
+
 
 function parse(schema) {
     // parse mysql schema
@@ -8,32 +27,29 @@ function parse(schema) {
     var relationships = []
     var match, keymatch;
     // look for table names and generate a list of entities
-    while ((match = tablename_re.exec(schema)) !== null) {
-        var table = match[1],
+    while ((match = mysql_regex.tablename.exec(schema)) !== null) {
+        var table_name = match[1],
             table_details = match[0];
-        entities.push({'id': table});
+        var entity = {id: table_name, fields: Array()};
 
-        // todo: gather field details for the table
+        // gather field details for the table
+        // look for attribute name and type
+        while ((attrmatch = mysql_regex.table_attribute.exec(table_details)) !== null) {
+            var attr_name = attrmatch[1], attr_type = attrmatch[2];
+            entity.fields.push({name: attr_name, type: attr_type});
+        }
+        entities.push(entity);
 
         // look for foreign keys within the table definition
-        while ((keymatch = foreign_key_re.exec(table_details)) !== null) {
-            relationships.push({'source': table, 'target': keymatch[2], 'value': 1})
+        while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
+            relationships.push({'source': table_name, 'target': keymatch[2], 'value': 1})
         }
 
     }
-
-/*    while ((match = foreign_key_re.exec(schema)) !== null) {
-        console.log(match);
-        relationships.push({'source': match[1], 'target': match[3]})
-    }
-*/
-    console.log(relationships);
-
   // "relationships": [
     // {"source": "People", "target": "Relationships", "value": 1},
     // {"source": "People", "target": "Nationalities", "value": 1},
 
-    // console.log(entities);
     return {
         'entities': entities,
         'relationships': relationships

@@ -34,6 +34,26 @@ describe('schema.parse', function() {
         assert.equal(info.entities[0].id, 'django_site');
         assert.equal(info.entities[1].id, 'footnotes_bibliography');
   });
+  it('should find table attributes', function() {
+        var info = parse(schema_snippets['footnotes_bibliography']);
+        var table = info.entities[0];
+        assert.equal(table.fields.length, 4);
+        assert.equal(table.fields[0].name, 'id');
+        assert.equal(table.fields[1].name, 'notes');
+        assert.equal(table.fields[2].name, 'bibliographic_note');
+        assert.equal(table.fields[3].name, 'source_type_id');
+
+  });
+  it('should find table attributes', function() {
+        var info = parse(schema_snippets['footnotes_bibliography']);
+        console.log(info);
+        var table = info.entities[0];
+        assert.equal(table.fields.length, 4);
+        assert.equal(table.fields[0].type, 'int(11)');
+        assert.equal(table.fields[1].type, 'longtext');
+        assert.equal(table.fields[2].type, 'longtext');
+        assert.equal(table.fields[3].type, 'int(11)');
+  });
   it('should find foreign key relationships', function() {
     var info = parse(schema_snippets['footnotes_bibliography']);
     assert.equal(info.relationships.length, 1);
