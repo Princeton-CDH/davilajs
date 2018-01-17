@@ -9,12 +9,14 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // load source code as module
   parse = require('../src/parse.js').parse;
 
+  // load source code as module
+  parse = require('../src/parse.js').parse;
+
 
 } else {
   // tests running in the browser
 
   // source code loaded via script tag in test runner html
-  // test utils with load_fixture method loaded in test runner
 }
 
 var assert = chai.assert;
