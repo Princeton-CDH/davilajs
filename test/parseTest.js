@@ -2,7 +2,6 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running on command-line via mocha
 
   chai = require('chai');
-  parse = require('../src/parse.js').parse;
 
   var fs = require('fs'),
       xml2js = require('xml2js');
@@ -15,9 +14,14 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     });
   }
 
+  // load source code as module
+  parse = require('../src/parse.js').parse;
+
 
 } else {
   // tests running in the browser
+
+  // source code loaded via script tag in test runner html
 
   function load_fixture(filename, callback) {
     // utility method to load fixture files
