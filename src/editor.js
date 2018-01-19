@@ -1,3 +1,8 @@
+if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
+  // load d3 when running on command-line (e.g. for unit tests via mocha)
+  d3 = require('d3');
+}
+
 
 function enable_schema_drop() {
     // turn on file drag & drop to allow users to load a schemas for display
@@ -25,6 +30,17 @@ function enable_schema_drop() {
         d3.event.preventDefault();
 
         var files = d3.event.dataTransfer.files;
+
+        // if somehow there are no files, exit
+        if (! files.length) {
+            return;
+        }
+
+        console.log('files');
+        console.log(files);
+
+        console.log('file-list');
+        console.log(d3.selectAll('#file-list'))
 
         d3.selectAll('#file-list').append('ul').selectAll('li').data(files)
             .enter().append('li')
@@ -59,10 +75,20 @@ function enable_schema_drop() {
 
 }
 
+// automatically turn on drop support when running in a browser
+if (typeof document !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", function(e) {
+        enable_schema_drop();
+    });
+}
 
-// automatically turn on drop support
-document.addEventListener("DOMContentLoaded", function(e) {
-    enable_schema_drop();
-});
+
+// export as node module when running under npm / command line
+if (typeof exports !== 'undefined') {
+    exports.editor = {
+        'enable_schema_drop': enable_schema_drop
+    };
+}
+
 
 
