@@ -2,24 +2,26 @@
 <html>
   <head>
     <title>Mocha Tests</title>
-    <link rel="stylesheet" href="/node_modules/mocha/mocha.css">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="/vendor/mocha.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
 
-    <script src="/node_modules/chai/chai.js"></script>
-    <script src="/node_modules/mocha/mocha.js"></script>
+    <script src="/vendor/mocha.js"></script>
+    <script src="/vendor/chai.js"></script>
     <script src="/vendor/sinon-4.1.6.js"></script>
     <script>mocha.setup('bdd')</script>
 
     <!-- load source code to be tested -->
     <script src="/src/davila.js"></script>
-    <script src="/src/editor.js"></script>
+
     <script src="/src/parse.js"></script>
-    <!-- load test files -->
     <script src="parseTest.js"></script>
+
+
+    <!-- load test files -->
+    <script src="/src/editor.js"></script>
     <script src="editorTest.js"></script>
 
     <script>

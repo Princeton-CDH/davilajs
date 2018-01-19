@@ -4,12 +4,10 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   chai = require('chai');
   jsdom = require('mocha-jsdom');
 
-
   sinon = require('sinon');
 
   // initialize jsdom when not running in the browser
   jsdom();
-
 
   editor = require('../src/editor.js').editor;
 
@@ -32,9 +30,11 @@ var schema_snippets = {}, derrida_schema;
 
 describe('editor.enable_schema_drop', function() {
 
-  var sandbox = sinon.createSandbox(sinon.defaultConfig);
+  var sandbox;
 
   before(function(done) {
+
+    sandbox = sinon.createSandbox(sinon.defaultConfig);
 
     if (typeof jsdom != 'undefined') {
       editor.enable_schema_drop();

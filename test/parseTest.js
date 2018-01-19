@@ -25,9 +25,20 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
 
   function load_fixture(filename, callback) {
     // utility method to load fixture files
-    $.get( "/test/" + filename, function(data) {
+    var relative_path = "/test/" + filename;
+    var load_method;
+    // load as xml if the filename includes .xml
+    if (filename.indexOf('.xml') !== -1) {
+      load_method = d3.xml;
+    //otherwise load as text
+    } else {
+      load_method = d3.text;
+    }
+
+    load_method(relative_path, function(error, data) {
+      if (error) throw error;
       callback(data);
-    });
+    })
   }
 }
 
@@ -35,7 +46,7 @@ var assert = chai.assert;
 
 // variables to store fixture data for schema samples to test
 var schema_snippets = {}, derrida_schema;
-
+var xml_fixture;
 
 describe('schema.parse', function() {
 
@@ -49,7 +60,6 @@ describe('schema.parse', function() {
 
     var load_schema_snippets = new Promise(function(resolve, reject) {
       load_fixture('fixtures/schema_snippets.xml', function(data) {
-
          // if running on the command line, parse schema snippets from xml fixture
         if (xml2js) {
           var parser = new xml2js.Parser();
@@ -63,13 +73,14 @@ describe('schema.parse', function() {
 
         // if running in the browser, use jquery to parse snippets from xml fixture
         } else {
-          var snippets = $(data).find('snippet');
+          var snippets = data.documentElement.getElementsByTagName("snippet");
           for (var i = 0; i < snippets.length; i++) {
-            var snippet = $(snippets[i]);
-            schema_snippets[snippet.attr('id')] = snippet.text();
+            var snippet = snippets[i];
+            schema_snippets[snippet.getAttribute('id')] = snippet.textContent;
           }
           resolve();
         }
+
       }); // end load fixture
     }); // end load_schema_snippets
 
