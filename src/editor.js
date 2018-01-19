@@ -36,12 +36,6 @@ function enable_schema_drop() {
             return;
         }
 
-        console.log('files');
-        console.log(files);
-
-        console.log('file-list');
-        console.log(d3.selectAll('#file-list'))
-
         d3.selectAll('#file-list').append('ul').selectAll('li').data(files)
             .enter().append('li')
             .html(function(d) {

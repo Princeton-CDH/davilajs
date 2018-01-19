@@ -4,10 +4,24 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   chai = require('chai');
   jsdom = require('mocha-jsdom');
 
+
   sinon = require('sinon');
 
-  // load source code as module
+  // initialize jsdom when not running in the browser
+  jsdom();
+
+
   editor = require('../src/editor.js').editor;
+
+  // jsdom doesn't yet include CustomEvent invocation; wrap createEvent
+  // for compatibility with in-browser test code
+  function CustomEvent (name, opts = {}) {
+    let e = document.createEvent('HTMLEvents');
+    e.detail = opts.detail;
+    e.initEvent(name, opts, opts.bubbles, opts.cancelable);
+    return e;
+  }
+
 }
 
 var assert = chai.assert;
@@ -18,14 +32,15 @@ var schema_snippets = {}, derrida_schema;
 
 describe('editor.enable_schema_drop', function() {
 
+  var sandbox = sinon.createSandbox(sinon.defaultConfig);
+
   before(function(done) {
+
     if (typeof jsdom != 'undefined') {
-      jsdom();
       editor.enable_schema_drop();
     } else {
       enable_schema_drop();
     }
-
     done();
   });
 
@@ -34,15 +49,19 @@ describe('editor.enable_schema_drop', function() {
     d3.select('body').attr('class', '');
   });
 
+  afterEach(function() {
+    sandbox.restore();
+  });
+
   it('should handle dragenter event', function() {
-    // create drag-enter event and spy on methods
-    var dragenter_event = new Event('dragenter', {target: document.body});
+    var dragenter_event = new CustomEvent('dragenter', {target: document.body});
     dragenter_event.preventDefault = sinon.spy();
     dragenter_event.stopPropagation = sinon.spy();
     dragenter_event.dataTransfer = sinon.stub();
 
     // patch event object into d3.event
-    d3.event = dragenter_event;
+    sandbox.stub(d3, 'event').value(dragenter_event);
+
     // trigger the event
     document.body.dispatchEvent(dragenter_event);
 
@@ -56,13 +75,13 @@ describe('editor.enable_schema_drop', function() {
 
   it('should handle dragover event', function() {
     // create drag-enter event and spy on methods
-    var dragover_event = new Event('dragover', {target: document.body});
+    var dragover_event = new CustomEvent('dragover', {target: document.body});
     dragover_event.preventDefault = sinon.spy();
     dragover_event.stopPropagation = sinon.spy();
     dragover_event.dataTransfer = sinon.stub();
 
     // patch event object into d3.event
-    d3.event = dragover_event;
+    sandbox.stub(d3, 'event').value(dragover_event);
     // trigger the event
     document.body.dispatchEvent(dragover_event);
 
@@ -78,14 +97,14 @@ describe('editor.enable_schema_drop', function() {
     // set class to active to test that it gets cleared
     d3.select('body').attr('class', 'active');
 
-    var dragleave_event = new Event('dragleave', {target: document.body});
+    var dragleave_event = new CustomEvent('dragleave', {target: document.body});
     document.body.dispatchEvent(dragleave_event);
 
     assert.equal(d3.select('body').attr('class'), '');
   });
 
   it('should handle drop event', function() {
-    var drop_event = new Event('drop', {target: document.body});
+    var drop_event = new CustomEvent('drop', {target: document.body});
     drop_event.preventDefault = sinon.spy();
     drop_event.stopPropagation = sinon.spy();
     drop_event.dataTransfer = sinon.stub();
@@ -93,6 +112,9 @@ describe('editor.enable_schema_drop', function() {
 
     // create file list element for logging file
     d3.select('body').append('div').attr('id', 'file-list');
+
+    // patch event object into d3.event
+    sandbox.stub(d3, 'event').value(drop_event);
 
     // test with no files
     drop_event.dataTransfer.files = [];
@@ -107,7 +129,6 @@ describe('editor.enable_schema_drop', function() {
     // dropfile.size = 10000;
     // dropfile.lastModifiedDate ??
     drop_event.dataTransfer.files = [dropfile];
-
     // document.body.dispatchEvent(drop_event);
   });
 
