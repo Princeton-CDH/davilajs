@@ -81,9 +81,13 @@ svg.d3, .container {
 }
 
 /* ... needs transition */
-/* set collapsed entity to solid color */
-.entity.collapsed .fields {
+.entity .fields {
   display: none;
+}
+
+/* set collapsed entity to solid color */
+.entity.details .fields {
+  display: block;
 }
 
 .fields {

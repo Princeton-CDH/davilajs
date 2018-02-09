@@ -51,17 +51,31 @@ var davila = {
               .on("drag", dragged)
               .on("end", dragended));
 
+      // temporary: toggle collapsed/uncollapsed on double click
       node.on("dblclick", function() {
         var el = d3.select(this);
-          el.classed('collapsed', !el.classed('collapsed'));
+          el.classed('details', !el.classed('details'));
         });
-
 
       node.append("p")
           .text(function(d) { return d.id; });
 
-      var fieldlist = node.append('ul')
+    // for each entity, load the list of attributes and data types (hidden by default)
+    var fieldlist = node.append('ul')
         .attr('class', 'fields');
+
+    var fields = fieldlist.selectAll('li')
+        .data(function(d) { return 'fields' in d ? d.fields : []; })
+        .enter().append('li')
+         .attr('class', 'fields')
+          .append('span').attr('class', 'name').text(function(d) { return d.name })
+          .append('span').attr('class', 'type').text(function(d) { return d.type; });
+
+    fields.selectAll('.field')
+      .data(function(d, i) { return d;})
+      .enter().append('div')
+          .attr('class', 'field')
+          .text(function(d) { return d.name; });
 
       simulation
           .nodes(graph.entities)
