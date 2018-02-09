@@ -20,6 +20,36 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     return e;
   }
 
+  // copied from parseTest
+ function load_fixture(filename, callback) {
+    // utility method to load fixture files relative to the
+    // directory where this test file is located
+    fs.readFile(__dirname + '/' + filename, function(err, data) {
+      callback(data.toString());
+    });
+  }
+
+} else {
+
+  // source code loaded via script tag in test runner html
+
+  function load_fixture(filename, callback) {
+    // utility method to load fixture files
+    var relative_path = "/test/" + filename;
+    var load_method;
+    // load as xml if the filename includes .xml
+    if (filename.indexOf('.xml') !== -1) {
+      load_method = d3.xml;
+    //otherwise load as text
+    } else {
+      load_method = d3.text;
+    }
+
+    load_method(relative_path, function(error, data) {
+      if (error) throw error;
+      callback(data);
+    })
+  }
 }
 
 var assert = chai.assert;
@@ -34,14 +64,30 @@ describe('editor.enable_schema_drop', function() {
 
   before(function(done) {
 
-    sandbox = sinon.createSandbox(sinon.defaultConfig);
+    var load_derrida_schema = new Promise(function(resolve, reject) {
+      load_fixture('fixtures/derrida_schema.sql', function( data ) {
+        derrida_schema = data;
+        resolve();
+        });
+    });
 
-    if (typeof jsdom != 'undefined') {
-      editor.enable_schema_drop();
-    } else {
-      enable_schema_drop();
-    }
-    done();
+    var enable_schema_drop = new Promise(function(resolve, reject) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+
+        if (typeof jsdom != 'undefined') {
+          editor.enable_schema_drop();
+        } else {
+          // currently auto-enabled when running in the browser
+          // enable_schema_drop();
+        }
+        resolve();
+    });
+
+     // run all fixture loading promises, then mark before hook as done
+    Promise.all([load_derrida_schema, enable_schema_drop]).then(function() {
+        done();
+    });
+
   });
 
   beforeEach(function() {
@@ -122,14 +168,24 @@ describe('editor.enable_schema_drop', function() {
     assert(d3.event.preventDefault.called);
     assert(d3.event.stopPropagation.called);
 
-    // TODO: simulate reading file
-    // create stub for dropped file
+    // test with simulated file dropped
+    // create stub for dropped file & associate with event
     var dropfile = sinon.stub({name: 'myschema.sql', size: 1000});
-    // dropfile.name = 'myschema.sql';
-    // dropfile.size = 10000;
-    // dropfile.lastModifiedDate ??
     drop_event.dataTransfer.files = [dropfile];
-    // document.body.dispatchEvent(drop_event);
+    // stub file reader object
+    var file_content = '';
+    var filereader_readastext = sandbox.stub(FileReader.prototype, 'readAsText').callsFake(function() {
+        this.result = derrida_schema;
+        this.onload({ target: { result: derrida_schema}});
+    });
+    // empty file - should not error
+    document.body.dispatchEvent(drop_event);
+    // read as text should have been called
+    assert(filereader_readastext.called);
+
+
+    filereader_readastext.restore();
+
   });
 
 });

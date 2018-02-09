@@ -49,14 +49,19 @@ function enable_schema_drop() {
 
         /* read file as text and parse as schema */
         var reader = new FileReader();
-        reader.onload = function(e) {
-          var schema_info = parse(reader.result);
-          console.log(schema_info);
-          // TODO: check that parse returns entity relationship object
-          davila_display(schema_info);
+        reader.onload = function(event) {
+            // NOTE: using event.target instead of reader because
+            // it's easier to stub in the unit tests
+            var schema_info = parse(event.target.result);
+            console.log(schema_info);
+            // if entities are found, then display them
+            if (schema_info.entities.length) {
+                console.log('calling davila display');
+              davila_display(schema_info);
+            }
+          // TODO: display a message if no entities are found
         }
         reader.readAsText(files[0]);
-
         // TODO error handling
     }
 

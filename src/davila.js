@@ -9,7 +9,6 @@ function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
 
-
     var files = evt.dataTransfer.files; // FileList object.
 
     // files is a FileList of File objects. Add brief display of dropped file
@@ -80,20 +79,14 @@ function handleFileSelect(evt) {
 
 //});
 
-/*
-d3.json("/examples/mep-people.json", function(error, graph) {
-  if (error) throw error;
-  davila_display(graph);
-});
-*/
 
 
 function davila_display(graph) {
 console.log('loading graph');
 console.log(graph);
 var svg = d3.select("svg.d3"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+    width = + svg.attr("width"),
+    height = + svg.attr("height");
 
 // arrow head marker
 svg.append("defs").selectAll("marker")
