@@ -80,6 +80,11 @@ svg.d3, .container {
     z-index: 4;
 }
 
+.entity h2 {
+  padding-right: 2em;
+
+}
+
 .entity .detail-toggle {
   position: absolute;
   top: 2px;
@@ -94,8 +99,10 @@ svg.d3, .container {
   font-size: 1.5em;
 }
 
-/* by default, do not display entity details/attributes */
 .entity .fieldlist {
+  margin: 0;
+
+  /* by default, do not display entity details/attributes */
   height: 0;
   visibility: hidden;
   opacity: 0;
@@ -108,7 +115,6 @@ svg.d3, .container {
   opacity: 1;
   visibility: visible;
   height: auto;
-
 }
 
 .fields {

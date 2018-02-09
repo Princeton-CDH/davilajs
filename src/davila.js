@@ -51,10 +51,11 @@ var davila = {
               .on("drag", dragged)
               .on("end", dragended));
 
-    // add a detail toggle button to each entity div
-      node.append("p")
+      // add entity id as div title
+      node.append("h2")
           .text(function(d) { return d.id; });
-      // add toggle element to each div
+
+       // add a detail toggle button to each entity div
       var toggle = node.append('div').attr('class', 'detail-toggle');
       // on click, toggle detail display
       toggle.on('click', function() {
