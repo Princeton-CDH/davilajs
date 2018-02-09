@@ -51,18 +51,20 @@ var davila = {
               .on("drag", dragged)
               .on("end", dragended));
 
-      // temporary: toggle collapsed/uncollapsed on double click
-      node.on("dblclick", function() {
-        var el = d3.select(this);
-          el.classed('details', !el.classed('details'));
-        });
-
+    // add a detail toggle button to each entity div
       node.append("p")
           .text(function(d) { return d.id; });
+      // add toggle element to each div
+      var toggle = node.append('div').attr('class', 'detail-toggle');
+      // on click, toggle detail display
+      toggle.on('click', function() {
+        var el = d3.select(this.parentNode);
+        el.classed('details', !el.classed('details'));
+      });
 
     // for each entity, load the list of attributes and data types (hidden by default)
     var fieldlist = node.append('ul')
-        .attr('class', 'fields');
+        .attr('class', 'fieldlist');
 
     var fields = fieldlist.selectAll('li')
         .data(function(d) { return 'fields' in d ? d.fields : []; })

@@ -80,14 +80,35 @@ svg.d3, .container {
     z-index: 4;
 }
 
-/* ... needs transition */
-.entity .fields {
-  display: none;
+.entity .detail-toggle {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  color: #b7b7b7; /* gray? lightgray? */
+  cursor: pointer;
+}
+.entity .detail-toggle::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f05a";  // font awesome info circle icon
+  font-size: 1.5em;
 }
 
-/* set collapsed entity to solid color */
-.entity.details .fields {
-  display: block;
+/* by default, do not display entity details/attributes */
+.entity .fieldlist {
+  height: 0;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 1s ease-out;
+}
+
+/* display fields when details class is set on entity container */
+.entity.details .fieldlist {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+
 }
 
 .fields {
