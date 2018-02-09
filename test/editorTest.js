@@ -2,14 +2,15 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running on command-line via mocha
 
   chai = require('chai');
-  jsdom = require('mocha-jsdom'),
-  fs = require('fs');
+  jsdom = require('mocha-jsdom');
+  // fs = require('fs');
 
   sinon = require('sinon');
 
   // initialize jsdom when not running in the browser
   jsdom();
 
+  load_fixture = require('./utils.js').load_fixture;
   editor = require('../src/editor.js').editor;
   davila = require('../src/davila.js').davila;
 
@@ -22,36 +23,11 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     return e;
   }
 
-  // copied from parseTest
- function load_fixture(filename, callback) {
-    // utility method to load fixture files relative to the
-    // directory where this test file is located
-    fs.readFile(__dirname + '/' + filename, function(err, data) {
-      callback(data.toString());
-    });
-  }
-
 } else {
 
   // source code loaded via script tag in test runner html
+  // test utils with load_fixture method loaded in test runner
 
-  function load_fixture(filename, callback) {
-    // utility method to load fixture files
-    var relative_path = "/test/" + filename;
-    var load_method;
-    // load as xml if the filename includes .xml
-    if (filename.indexOf('.xml') !== -1) {
-      load_method = d3.xml;
-    //otherwise load as text
-    } else {
-      load_method = d3.text;
-    }
-
-    load_method(relative_path, function(error, data) {
-      if (error) throw error;
-      callback(data);
-    })
-  }
 }
 
 var assert = chai.assert;

@@ -2,17 +2,9 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running on command-line via mocha
 
   chai = require('chai');
+  xml2js = require('xml2js');
 
-  var fs = require('fs'),
-      xml2js = require('xml2js');
-
-  function load_fixture(filename, callback) {
-    // utility method to load fixture files relative to the
-    // directory where this test file is located
-    fs.readFile(__dirname + '/' + filename, function(err, data) {
-      callback(data.toString());
-    });
-  }
+  load_fixture = require('./utils.js').load_fixture;
 
   // load source code as module
   parse = require('../src/parse.js').parse;
@@ -22,24 +14,7 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running in the browser
 
   // source code loaded via script tag in test runner html
-
-  function load_fixture(filename, callback) {
-    // utility method to load fixture files
-    var relative_path = "/test/" + filename;
-    var load_method;
-    // load as xml if the filename includes .xml
-    if (filename.indexOf('.xml') !== -1) {
-      load_method = d3.xml;
-    //otherwise load as text
-    } else {
-      load_method = d3.text;
-    }
-
-    load_method(relative_path, function(error, data) {
-      if (error) throw error;
-      callback(data);
-    })
-  }
+  // test utils with load_fixture method loaded in test runner
 }
 
 var assert = chai.assert;
@@ -61,7 +36,7 @@ describe('schema.parse', function() {
     var load_schema_snippets = new Promise(function(resolve, reject) {
       load_fixture('fixtures/schema_snippets.xml', function(data) {
          // if running on the command line, parse schema snippets from xml fixture
-        if (xml2js) {
+        if (typeof xml2js !== 'undefined') {
           var parser = new xml2js.Parser();
           parser.parseString(data, function (err, result) {
               for (var i = 0; i < result.schema_snippets.snippet.length; i++) {
