@@ -2,7 +2,8 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running on command-line via mocha
 
   chai = require('chai');
-  jsdom = require('mocha-jsdom');
+  jsdom = require('mocha-jsdom'),
+  fs = require('fs');
 
   sinon = require('sinon');
 
@@ -10,6 +11,7 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   jsdom();
 
   editor = require('../src/editor.js').editor;
+  davila = require('../src/davila.js').davila;
 
   // jsdom doesn't yet include CustomEvent invocation; wrap createEvent
   // for compatibility with in-browser test code

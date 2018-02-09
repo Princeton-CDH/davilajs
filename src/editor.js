@@ -53,11 +53,9 @@ function enable_schema_drop() {
             // NOTE: using event.target instead of reader because
             // it's easier to stub in the unit tests
             var schema_info = parse(event.target.result);
-            console.log(schema_info);
             // if entities are found, then display them
             if (schema_info.entities.length) {
-                console.log('calling davila display');
-              davila_display(schema_info);
+              davila.display(schema_info);
             }
           // TODO: display a message if no entities are found
         }

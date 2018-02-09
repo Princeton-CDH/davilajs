@@ -279,3 +279,13 @@ function dragended(d) {
 
 //     // Getting URL var by its nam
 // var byName = $.getUrlVar('name');
+
+
+
+// export as node module when running under npm / command line
+if (typeof exports !== 'undefined') {
+    exports.davila = davila;
+}
+
+
+
