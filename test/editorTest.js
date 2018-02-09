@@ -93,6 +93,8 @@ describe('editor.enable_schema_drop', function() {
   beforeEach(function() {
     // clear out body class before each run
     d3.select('body').attr('class', '');
+
+    sandbox.stub(davila, 'display');
   });
 
   afterEach(function() {
@@ -156,8 +158,9 @@ describe('editor.enable_schema_drop', function() {
     drop_event.dataTransfer = sinon.stub();
     drop_event.dataTransfer.files = [];
 
-    // create file list element for logging file
-    d3.select('body').append('div').attr('id', 'file-list');
+    // create hidden file list element for logging dropped file
+    d3.select('body').append('div').attr('id', 'file-list')
+        .attr('style', 'display: none');
 
     // patch event object into d3.event
     sandbox.stub(d3, 'event').value(drop_event);
@@ -174,18 +177,38 @@ describe('editor.enable_schema_drop', function() {
     drop_event.dataTransfer.files = [dropfile];
     // stub file reader object
     var file_content = '';
-    var filereader_readastext = sandbox.stub(FileReader.prototype, 'readAsText').callsFake(function() {
-        this.result = derrida_schema;
-        this.onload({ target: { result: derrida_schema}});
+    var filereader_readastext = sandbox.stub(FileReader.prototype, 'readAsText').callsFake(
+        function() {
+        this.result = '';
+        this.onload({ target: { result: this.result}});
     });
     // empty file - should not error
     document.body.dispatchEvent(drop_event);
     // read as text should have been called
     assert(filereader_readastext.called);
+    assert(filereader_readastext.calledWith(dropfile));
+    // davila display should not be called when no entities are found
+    assert(! davila.display.called);
+    // current implementation displays dropped file name and size
+    // in the file-list element
+    var file_list_text = d3.select('#file-list').text();
+    assert(file_list_text.includes(dropfile.name));
+    assert(file_list_text.includes(dropfile.size));
 
+    // reset mock and trigger event again with sql schema content
+    filereader_readastext.reset();
+    filereader_readastext.callsFake(function() {
+        this.result = derrida_schema;
+        this.onload({ target: { result: derrida_schema}});
+    });
+    document.body.dispatchEvent(drop_event);
+    assert(davila.display.called);
+    // called with entity & relationship object returned by parse
+    assert(davila.display.getCall(0).args[0].entities);
+    assert(davila.display.getCall(0).args[0].relationships);
 
+    // undo stub
     filereader_readastext.restore();
-
   });
 
 });

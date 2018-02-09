@@ -79,9 +79,9 @@ function handleFileSelect(evt) {
 
 //});
 
+var davila = {
 
-
-function davila_display(graph) {
+  display: function davila_display(graph) {
 console.log('loading graph');
 console.log(graph);
 var svg = d3.select("svg.d3"),
@@ -248,7 +248,9 @@ function dragended(d) {
   d.fx = null;
   d.fy = null;
 }
-}
+},
+
+};
 
 
 // access to query string parameters
