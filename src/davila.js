@@ -2,6 +2,8 @@
 var davila = {
 
   display: function (graph) {
+    // TODO: add documentation about expected data structure
+
     var svg = d3.select("svg.d3"),
         width = + svg.attr("width"),
         height = + svg.attr("height");
@@ -116,6 +118,7 @@ var davila = {
         d.fx = null;
         d.fy = null;
       }
+
     },
 
   };

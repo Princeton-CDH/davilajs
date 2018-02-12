@@ -3,12 +3,7 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
 
   chai = require('chai');
   jsdom = require('mocha-jsdom');
-  // fs = require('fs');
-
   sinon = require('sinon');
-
-  // initialize jsdom when not running in the browser
-  jsdom();
 
   load_fixture = require('./utils.js').load_fixture;
   editor = require('../src/editor.js').editor;
@@ -23,12 +18,11 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
     return e;
   }
 
-} else {
-
-  // source code loaded via script tag in test runner html
-  // test utils with load_fixture method loaded in test runner
-
 }
+
+// source code loaded via script tag in test runner html
+// test utils with load_fixture method loaded in test runner
+
 
 var assert = chai.assert;
 
@@ -37,6 +31,10 @@ var schema_snippets = {}, derrida_schema;
 
 
 describe('editor.enable_schema_drop', function() {
+    // initialize jsdom when not running in the browser
+    if (typeof document != 'object') {
+        jsdom();
+    }
 
   var sandbox;
 
