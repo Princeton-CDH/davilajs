@@ -8,23 +8,26 @@ describe('davila.display', function() {
   if (typeof jsdom !== 'undefined') {
     jsdom();
   }
-  var container, svg;
+  var container, svg, sandbox;
 
-  var sandbox = sinon.createSandbox(sinon.defaultConfig);
+  before(function(done) {
+    sandbox = sinon.createSandbox(sinon.defaultConfig);
+    done();
+  });
 
     beforeEach(function(done) {
         // TODO: create init davila container function in test utils
-        svg = document.createElement('svg');
+       svg = document.createElement('svg');
         svg.setAttribute('class', 'd3');
         container = document.createElement('div');
         container.setAttribute('class', 'container');
         document.body.appendChild(container);
         document.body.appendChild(svg);
-        done();
 
         // stub out d3.forcesimulation; actually running it
         // causes command line tests to hang
-        sandbox.stub(d3, 'forceSimulation');
+        sandbox.mock(d3, 'forceSimulation');
+        done();
     });
 
     afterEach(function() {
