@@ -80,7 +80,22 @@ describe('davila.display', function() {
         });
       });
 
-      it('should display entity detail display when toggle is clicked');
+      it('should display entity detail display when toggle is clicked', function() {
+        var graph = {
+            entities: [
+                {id: 'something', fields: [
+                  {name: "id", type: "int(11)"},
+                ]},
+            ],
+            relationships: []
+          };
+        davila.display(graph);
+
+        assert.notInclude(d3.select('.entity').attr('class'), 'details');
+
+        d3.select('.entity .detail-toggle').dispatch("click");
+        assert.include(d3.select('.entity').attr('class'), 'details');
+      });
 
       it('should display relationships as links', function() {
          var graph = {
