@@ -62,6 +62,23 @@ describe('davila.display', function() {
 
       it('should display entity detail display when toggle is clicked');
 
-      it('should display relationships as links');
+      it('should display relationships as links', function() {
+         var graph = {
+            entities: [
+                {id: 'something'},
+                {id: 'another'},
+                {id: 'third'}
+            ],
+            relationships: [
+              {source: 'something', target: 'another'},
+              {source: 'something', target: 'third'}
+            ]
+        };
+        var simulation = davila.display(graph);
+        // should create link container
+        assert.equal(d3.selectAll('g.links').size(), 1);
+        // create one link for each relationship
+        assert.equal(d3.selectAll('g.links line').size(), graph.relationships.length);
+      });
 
 });
