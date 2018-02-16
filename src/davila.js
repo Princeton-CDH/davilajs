@@ -75,14 +75,9 @@ var davila = {
          .attr('class', 'fields')
           .append('span').attr('class', 'name').text(function(d) { return d.name });
 
+    // add field type to each li separately, rather than inside name span
     fieldlist.selectAll('li')
           .append('span').attr('class', 'type').text(function(d) { return d.type; });
-
-    fields.selectAll('.field')
-      .data(function(d, i) { return d;})
-      .enter().append('div')
-          .attr('class', 'field')
-          .text(function(d) { return d.name; });
 
       simulation
           .nodes(graph.entities)
