@@ -58,7 +58,27 @@ describe('davila.display', function() {
         })
       });
 
-      it('should display entity attributes and data types');
+      it('should display entity attributes and data types', function() {
+         var graph = {
+            entities: [
+                {id: 'something', fields: [
+                  {name: "id", type: "int(11)"},
+                  {name: "name", type: "varchar(200)"},
+                  {name: "notes", type: "longtext"}
+                ]},
+            ],
+            relationships: []
+          };
+        davila.display(graph);
+
+        // check that field names and types have been added to the document
+        // for display
+        d3.selectAll('li.fields').each(function(d, i) {
+          assert.equal(d3.select(this).select('.name').text(), graph.entities[0].fields[i].name);
+          assert.equal(d3.select(this).select('.type').text(), graph.entities[0].fields[i].type);
+
+        });
+      });
 
       it('should display entity detail display when toggle is clicked');
 

@@ -73,7 +73,9 @@ var davila = {
         .data(function(d) { return 'fields' in d ? d.fields : []; })
         .enter().append('li')
          .attr('class', 'fields')
-          .append('span').attr('class', 'name').text(function(d) { return d.name })
+          .append('span').attr('class', 'name').text(function(d) { return d.name });
+
+    fieldlist.selectAll('li')
           .append('span').attr('class', 'type').text(function(d) { return d.type; });
 
     fields.selectAll('.field')
