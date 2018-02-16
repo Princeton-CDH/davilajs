@@ -85,6 +85,11 @@ describe('schema.parse', function() {
         assert.equal(table.fields[2].type, 'longtext');
         assert.equal(table.fields[3].type, 'int(11)');
   });
+  it('should recognize primary key', function() {
+        var info = parse(schema_snippets['footnotes_bibliography']);
+        var table = info.entities[0];
+        assert.equal(table.fields[0].attributes, 'primary key');
+  });
   it('should find foreign key relationships', function() {
     var info = parse(schema_snippets['footnotes_bibliography']);
     assert.equal(info.relationships.length, 1);
