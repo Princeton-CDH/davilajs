@@ -1,6 +1,8 @@
 if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
   // load d3 when running on command-line (e.g. for unit tests via mocha)
   d3 = require('d3');
+  parse = require('../src/parse.js').parse;
+  davila = require('../src/davila.js').davila;
 }
 
 

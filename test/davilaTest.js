@@ -1,29 +1,39 @@
-if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
-  chai = require('chai');
-  jsdom = require('mocha-jsdom');
-  // load d3 when running on command-line (e.g. for unit tests via mocha)
-  d3 = require('d3');
+require('./setup')
 
+if (typeof process === 'object') {  // node environment
   davila = require('../src/davila.js').davila;
 }
 
-var assert = chai.assert;
-
 describe('davila.display', function() {
-    // initialize jsdom when not running in the browser
-    if (typeof document != 'object') {
-       jsdom();
-    }
+  if (typeof jsdom !== 'undefined') {
+    jsdom();
+  }
+  var container, svg;
 
-    before(function(done) {
+  var sandbox = sinon.createSandbox(sinon.defaultConfig);
+
+    beforeEach(function(done) {
         // TODO: create init davila container function in test utils
-        var svg = document.createElement('svg');
+        svg = document.createElement('svg');
         svg.setAttribute('class', 'd3');
-        var container = document.createElement('div');
+        container = document.createElement('div');
         container.setAttribute('class', 'container');
         document.body.appendChild(container);
         document.body.appendChild(svg);
         done();
+
+        // stub out d3.forcesimulation; actually running it
+        // causes command line tests to hang
+        sandbox.stub(d3, 'forceSimulation');
+    });
+
+    afterEach(function() {
+      d3.selectAll('.links').remove();
+      d3.selectAll('.entities').remove();
+      document.body.removeChild(container);
+      document.body.removeChild(svg);
+
+      sandbox.restore();
     });
 
      it('should display entity name', function() {
@@ -35,9 +45,9 @@ describe('davila.display', function() {
             ],
             relationships: []
         };
-        davila.display(graph);
-        // TODO: need some way to turn off/end the simulation?
-        // (test seems to be waiting for it)
+        var simulation = davila.display(graph);
+        // stop the simulation so tests don't hang waiting for it to run
+        // simulation.stop();
 
         // assert.equal(d3.select('.entity h2').text(), graph.entities[0].id);
         d3.selectAll('.entity h2').each(function(d, i) {

@@ -1,11 +1,8 @@
-if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
-  // tests running on command-line via mocha
+/* global chai.assert; load requirements for node environment */
+require('./setup')
 
-  chai = require('chai');
-  jsdom = require('mocha-jsdom');
-  sinon = require('sinon');
+if (typeof process === 'object') {  // node environment
 
-  load_fixture = require('./utils.js').load_fixture;
   editor = require('../src/editor.js').editor;
   davila = require('../src/davila.js').davila;
 
@@ -24,19 +21,15 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
 // test utils with load_fixture method loaded in test runner
 
 
-var assert = chai.assert;
-
 // variables to store fixture data for schema samples to test
 var schema_snippets = {}, derrida_schema;
 
 
 describe('editor.enable_schema_drop', function() {
-    // initialize jsdom when not running in the browser
-    if (typeof document != 'object') {
-        jsdom();
-    }
-
   var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
 
   before(function(done) {
 
@@ -50,7 +43,7 @@ describe('editor.enable_schema_drop', function() {
     var enable_schema_drop = new Promise(function(resolve, reject) {
         sandbox = sinon.createSandbox(sinon.defaultConfig);
 
-        if (typeof jsdom != 'undefined') {
+        if (typeof jsdom !== 'undefined') {
           editor.enable_schema_drop();
         } else {
           // currently auto-enabled when running in the browser
@@ -69,7 +62,6 @@ describe('editor.enable_schema_drop', function() {
   beforeEach(function() {
     // clear out body class before each run
     d3.select('body').attr('class', '');
-
     sandbox.stub(davila, 'display');
   });
 
@@ -127,7 +119,7 @@ describe('editor.enable_schema_drop', function() {
     assert.equal(d3.select('body').attr('class'), '');
   });
 
-  it('should handle drop event', function() {
+  it('should handle drop event (no files)', function() {
     var drop_event = new CustomEvent('drop', {target: document.body});
     drop_event.preventDefault = sinon.spy();
     drop_event.stopPropagation = sinon.spy();
@@ -146,6 +138,21 @@ describe('editor.enable_schema_drop', function() {
     document.body.dispatchEvent(drop_event);
     assert(d3.event.preventDefault.called);
     assert(d3.event.stopPropagation.called);
+  });
+
+  it('should handle drop event (no content)', function() {
+    var drop_event = new CustomEvent('drop', {target: document.body});
+    drop_event.preventDefault = sinon.spy();
+    drop_event.stopPropagation = sinon.spy();
+    drop_event.dataTransfer = sinon.stub();
+    drop_event.dataTransfer.files = [];
+
+    // create hidden file list element for logging dropped file
+    d3.select('body').append('div').attr('id', 'file-list')
+        .attr('style', 'display: none');
+
+    // patch event object into d3.event
+    sandbox.stub(d3, 'event').value(drop_event);
 
     // test with simulated file dropped
     // create stub for dropped file & associate with event
@@ -171,13 +178,37 @@ describe('editor.enable_schema_drop', function() {
     assert(file_list_text.includes(dropfile.name));
     assert(file_list_text.includes(dropfile.size));
 
-    // reset mock and trigger event again with sql schema content
-    filereader_readastext.reset();
-    filereader_readastext.callsFake(function() {
+  });
+
+  it('should handle drop event (sql schema content)', function() {
+    var drop_event = new CustomEvent('drop', {target: document.body});
+    drop_event.preventDefault = sinon.spy();
+    drop_event.stopPropagation = sinon.spy();
+    drop_event.dataTransfer = sinon.stub();
+    drop_event.dataTransfer.files = [];
+
+    // create hidden file list element for logging dropped file
+    d3.select('body').append('div').attr('id', 'file-list')
+        .attr('style', 'display: none');
+
+    // patch event object into d3.event
+    sandbox.stub(d3, 'event').value(drop_event);
+
+    // test with simulated file dropped
+    // create stub for dropped file & associate with event
+    var dropfile = sinon.stub({name: 'myschema.sql', size: 1000});
+    drop_event.dataTransfer.files = [dropfile];
+    // stub file reader object
+    var filereader_readastext = sandbox.stub(FileReader.prototype, 'readAsText').callsFake(
+        function() {
         this.result = derrida_schema;
         this.onload({ target: { result: derrida_schema}});
     });
+
     document.body.dispatchEvent(drop_event);
+    assert(filereader_readastext.called);
+    assert(filereader_readastext.calledWith(dropfile));
+
     assert(davila.display.called);
     // called with entity & relationship object returned by parse
     assert(davila.display.getCall(0).args[0].entities);
