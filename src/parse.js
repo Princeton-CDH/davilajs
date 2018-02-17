@@ -34,6 +34,7 @@ function parse(schema) {
         var entity = {id: table_name, fields: Array()};
 
         // gather field details for the table
+
         // identify primary key
         // TODO: support composite primary key
         var primary_keys = [];
@@ -42,6 +43,13 @@ function parse(schema) {
         }
 
         // TODO: gather foreign keys
+        // look for foreign keys within the table definition
+        var foreign_keys = []
+        while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
+            var foreign_key = keymatch[1], ref_table = keymatch[2];
+            relationships.push({'source': table_name, 'target': ref_table, 'value': 1})
+            foreign_keys.push(foreign_key);
+        }
 
         // look for attribute name and type
         while ((attrmatch = mysql_regex.table_attribute.exec(table_details)) !== null) {
@@ -49,15 +57,13 @@ function parse(schema) {
             var entity_info = {name: attr_name, type: attr_type};
             if (primary_keys.includes(attr_name)) {
                 entity_info.attributes = 'primary key';
+            } else if (foreign_keys.includes(attr_name)) {
+                entity_info.attributes = 'foreign key';
             }
             entity.fields.push(entity_info);
         }
         entities.push(entity);
 
-        // look for foreign keys within the table definition
-        while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
-            relationships.push({'source': table_name, 'target': keymatch[2], 'value': 1})
-        }
 
     }
 

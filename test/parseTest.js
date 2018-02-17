@@ -113,4 +113,10 @@ describe('schema.parse', function() {
         assert.equal(info.entities.length, 49);
         assert.equal(info.relationships.length, 57);
   });
+  it('should identify foreign key attributes', function() {
+    var info = parse(schema_snippets['footnotes_bibliography']);
+    var table = info.entities[0];
+    assert.equal(table.fields[3].attributes, 'foreign key');
+  });
+
 });
