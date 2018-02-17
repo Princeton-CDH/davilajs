@@ -54,12 +54,7 @@ function enable_schema_drop() {
         reader.onload = function(event) {
             // NOTE: using event.target instead of reader because
             // it's easier to stub in the unit tests
-            var schema_info = parse(event.target.result);
-            // if entities are found, then display them
-            if (schema_info.entities.length) {
-              davila.display(schema_info);
-            }
-          // TODO: display a message if no entities are found
+            parse_and_display(event.target.result);
         }
         reader.readAsText(files[0]);
         // TODO error handling
@@ -74,11 +69,47 @@ function enable_schema_drop() {
 
 }
 
+function get_querystring_opts() {
+    // read query string parameters (if any) into an object
+    var query_string = location.search.replace('\?','').split('&');
+    var query_opts = {};
+    query_string.forEach(function(element) {
+        var parts = element.split('=');
+        query_opts[parts[0]] = parts[1];
+    })
+    return query_opts;
+}
+
+function parse_uri(uri) {
+    // load remote uri as text, then parse and display as mysql schema
+    d3.text(uri, function(error, data) {
+        if (error) throw error;
+        parse_and_display(data);
+    });
+}
+
+function parse_and_display(content) {
+    // parse and display content (whether loaded from dropped file or remote uri)
+    var schema_info = parse(content);
+    // if entities are found, then display them
+    if (schema_info.entities.length) {
+      davila.display(schema_info);
+    }
+  // TODO: display a message if no entities are found
+}
+
 // automatically turn on drop support when running in a browser
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function(e) {
         enable_schema_drop();
     });
+
+    // load schema via query string parameter if set
+    var query_opts = get_querystring_opts();
+    if (query_opts.uri) {
+        parse_uri(query_opts.uri);
+    }
+
 }
 
 
