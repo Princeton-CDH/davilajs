@@ -72,7 +72,7 @@ var davila = {
     var fields = fieldlist.selectAll('li')
         .data(function(d) { return 'fields' in d ? d.fields : []; })
         .enter().append('li')
-         .attr('class', 'fields')
+         .attr('class', function(d) { return d.attributes ? 'fields ' + d.attributes.replace(' ', '-') : 'fields'; })
           .append('span').attr('class', 'name').text(function(d) { return d.name });
 
     // add field type to each li separately, rather than inside name span

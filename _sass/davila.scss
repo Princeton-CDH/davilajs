@@ -122,6 +122,21 @@ svg.d3, .container {
   padding-left: 0;
 }
 
+/* display additional details after name */
+.fields span.name::after {
+  content: '';
+  padding-left: 0.5em;
+  color: gray;
+  font-variant: small-caps;
+}
+.fields.primary-key span.name::after {
+  content: 'primary key';
+}
+.fields.foreign-key span.name::after {
+  content: 'foreign key';
+}
+
+
 .fields span.type {
   float: right;
   margin-left: 10px;

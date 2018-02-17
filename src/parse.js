@@ -12,6 +12,11 @@
     ]
 }
 
+field definition may optionally include additioal attributes, e.g.
+to designate primary and foreign keys:
+
+    {name: attr_name, type: type, attributes: 'foreign key'},
+
 */
 
 var mysql_regex = {
