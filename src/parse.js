@@ -23,7 +23,7 @@ var mysql_regex = {
     tablename: /CREATE\sTABLE\s`(\w+)`[^;]*;/g,
     table_attribute: /^\s+`(\w+)`\s+(\w+[\d()]*)\s(.*),$/gm,
     foreign_key: /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g,
-    primary_key: /PRIMARY\sKEY\s\(`(\w+)`\)/g,
+    primary_key: /PRIMARY\sKEY\s\(`([\w,`]+)`\)/g,
 };
 
 
@@ -40,15 +40,14 @@ function parse(schema) {
 
         // gather field details for the table
 
-        // identify primary key
-        // TODO: support composite primary key
+        // identify primary key(s)
         var primary_keys = [];
         while ((pkeymatch = mysql_regex.primary_key.exec(table_details)) !== null) {
-            primary_keys.push(pkeymatch[1]);
+            // split on `,` to identify all fields in composite primary keys
+            primary_keys = primary_keys.concat(pkeymatch[1].split("`,`"));
         }
 
-        // TODO: gather foreign keys
-        // look for foreign keys within the table definition
+        // gather foreign keys and relationships
         var foreign_keys = []
         while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
             var foreign_key = keymatch[1], ref_table = keymatch[2];
@@ -68,8 +67,6 @@ function parse(schema) {
             entity.fields.push(entity_info);
         }
         entities.push(entity);
-
-
     }
 
     return {

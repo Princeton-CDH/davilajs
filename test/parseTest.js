@@ -90,6 +90,12 @@ describe('schema.parse', function() {
         var table = info.entities[0];
         assert.equal(table.fields[0].attributes, 'primary key');
   });
+  it('should handle composite primary key', function() {
+        var info = parse(schema_snippets['composite_primary_key']);
+        var table = info.entities[0];
+        assert.equal(table.fields[0].attributes, 'primary key');
+        assert.equal(table.fields[1].attributes, 'primary key');
+  });
   it('should find foreign key relationships', function() {
     var info = parse(schema_snippets['footnotes_bibliography']);
     assert.equal(info.relationships.length, 1);
