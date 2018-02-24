@@ -238,3 +238,38 @@ describe('editor.get_querystring_opts', function() {
       assert.equal(opts.baz, 'qux');
   });
 });
+
+describe('editor.parse_uri', function() {
+  var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
+
+   before(function(done) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+        done();
+  });
+
+  beforeEach(function() {
+    // clear out body class before each run
+    d3.select('body').attr('class', '');
+    sandbox.stub(editor, 'parse_and_display');
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it('should load a uri for parse and display', function(){
+    // stub d3.text and set to call callback method
+    var d3_text = sandbox.stub(d3, 'text').callsArgWith(1, 0, derrida_schema);
+    var test_uri = 'http://example.com/schema.sql';
+    editor.parse_uri(test_uri);
+    assert(d3_text.calledWith(test_uri));
+    assert(editor.parse_and_display.called);
+    assert(editor.parse_and_display.calledWith(derrida_schema));
+
+    // todo: test error handling
+  });
+
+});
