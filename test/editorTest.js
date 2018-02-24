@@ -251,8 +251,6 @@ describe('editor.parse_uri', function() {
   });
 
   beforeEach(function() {
-    // clear out body class before each run
-    d3.select('body').attr('class', '');
     sandbox.stub(editor, 'parse_and_display');
   });
 
@@ -270,6 +268,39 @@ describe('editor.parse_uri', function() {
     assert(editor.parse_and_display.calledWith(derrida_schema));
 
     // todo: test error handling
+  });
+
+});
+
+
+describe('editor.parse_and_display', function() {
+  var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
+
+   before(function(done) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+        done();
+  });
+
+  beforeEach(function() {
+    sandbox.stub(davila, 'display');
+    // NOTE: not currently stubbing parse method (but probably should)
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it('should parse but not display empty schema', function() {
+    editor.parse_and_display('');
+    assert(! davila.display.called);
+  });
+
+  it('should parse and display schema with entities', function() {
+    editor.parse_and_display(derrida_schema);
+    assert(davila.display.called);
   });
 
 });
