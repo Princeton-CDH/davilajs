@@ -219,3 +219,22 @@ describe('editor.enable_schema_drop', function() {
   });
 
 });
+
+
+describe('editor.get_querystring_opts', function() {
+
+  it('should not error with no query string params', function() {
+      editor.get_querystring_opts('');
+      editor.get_querystring_opts('?');
+      // no easy way to test empty object
+  });
+  it('should handle one query string param', function() {
+      var opts = editor.get_querystring_opts('?foo=bar');
+      assert.equal(opts.foo, 'bar');
+  });
+  it('should handle multiple query string params', function() {
+      var opts = editor.get_querystring_opts('?foo=bar&baz=qux');
+      assert.equal(opts.foo, 'bar');
+      assert.equal(opts.baz, 'qux');
+  });
+});

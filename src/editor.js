@@ -69,10 +69,14 @@ function enable_schema_drop() {
 
 }
 
-function get_querystring_opts() {
+function get_querystring_opts(location_search) {
     // read query string parameters (if any) into an object
-    var query_string = location.search.replace('\?','').split('&');
     var query_opts = {};
+    // return if there is not at least one variable set
+    if (location_search.indexOf('=') == -1 ) {
+        return query_opts;
+    }
+    var query_string = location_search.replace('\?','').split('&');
     query_string.forEach(function(element) {
         var parts = element.split('=');
         query_opts[parts[0]] = parts[1];
@@ -105,7 +109,7 @@ if (typeof document !== 'undefined') {
     });
 
     // load schema via query string parameter if set
-    var query_opts = get_querystring_opts();
+    var query_opts = get_querystring_opts(window.location.search);
     if (query_opts.uri) {
         parse_uri(query_opts.uri);
     }
@@ -116,7 +120,8 @@ if (typeof document !== 'undefined') {
 // export as node module when running under npm / command line
 if (typeof exports !== 'undefined') {
     exports.editor = {
-        'enable_schema_drop': enable_schema_drop
+        enable_schema_drop: enable_schema_drop,
+        get_querystring_opts: get_querystring_opts,
     };
 }
 
