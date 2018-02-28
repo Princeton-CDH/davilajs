@@ -1,0 +1,61 @@
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+  {% include head.html %}
+  <body class="davilajs">
+
+    <!-- {% include header.html %} -->
+    <header class="site-header" role="banner">
+        <a class="site-title" href="{{ "/" | relative_url }}">{{ site.title}}</a>
+        <!-- TODO: site nav disabled for now -->
+    </header>
+
+    <!-- <main class="page-content" aria-label="Content"> -->
+
+    <div class="controls">
+            <!--
+        <div class="tabs">
+            <div class="tab active" id="one"><a href="#info">details</a>
+            </div>
+            <div class="tab" id="two"><a href="#log">log</a></div>
+            <div class="tab" id="three"><a href="#help">help</a></div>
+        </div> -->
+
+            <section id="info" class="tab-panel">
+                <div id="file-list"></div>
+<!--                <ul>
+                    <li>group
+                        <ul>
+                            <li>entity1</li>
+                            <li>entity2</li>
+                        </ul>
+                    </li>
+                </ul> -->
+            </section>
+
+            <!--
+            <section id="log" class="tab-panel">
+                log details
+            </section> -->
+
+            <section id="help" class="tab-panel">
+                Drop a MySQL schema anywhere on the page to get started.
+            </section>
+
+        </div>
+    </div>
+    <div class="content">
+        {{ content }}
+    </div>
+
+    <!-- {% include footer.html %} -->
+    <footer class="site-footer">
+      <p>{{ site.description }}</p>
+  </footer>
+
+
+  {% for js in page.extra_js %}
+   <script type="text/javascript" src="{% unless js contains 'http' %}{{ site.baseurl }}/{% endunless %}{{ js }}"></script>
+  {% endfor %}
+
+  </body>
+
+</html>
