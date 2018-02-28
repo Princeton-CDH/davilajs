@@ -32,6 +32,7 @@ var editor = {
     function drop() {
         d3.event.stopPropagation();
         d3.event.preventDefault();
+        d3.select(this).classed('active', false);
 
         var files = d3.event.dataTransfer.files;
 

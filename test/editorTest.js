@@ -120,6 +120,7 @@ describe('editor.enable_schema_drop', function() {
   });
 
   it('should handle drop event (no files)', function() {
+    d3.select('body').attr('class', 'active');
     var drop_event = new CustomEvent('drop', {target: document.body});
     drop_event.preventDefault = sinon.spy();
     drop_event.stopPropagation = sinon.spy();
@@ -138,6 +139,7 @@ describe('editor.enable_schema_drop', function() {
     document.body.dispatchEvent(drop_event);
     assert(d3.event.preventDefault.called);
     assert(d3.event.stopPropagation.called);
+    assert.equal(d3.select('body').attr('class'), '');
   });
 
   it('should handle drop event (no content)', function() {
