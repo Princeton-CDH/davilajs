@@ -2,36 +2,26 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   // tests running on command-line via mocha
 
   chai = require('chai');
+  xml2js = require('xml2js');
+
+  load_fixture = require('./utils.js').load_fixture;
+
+  // load source code as module
   parse = require('../src/parse.js').parse;
-
-  var fs = require('fs'),
-      xml2js = require('xml2js');
-
-  function load_fixture(filename, callback) {
-    // utility method to load fixture files relative to the
-    // directory where this test file is located
-    fs.readFile(__dirname + '/' + filename, function(err, data) {
-      callback(data.toString());
-    });
-  }
 
 
 } else {
   // tests running in the browser
 
-  function load_fixture(filename, callback) {
-    // utility method to load fixture files
-    $.get( "/test/" + filename, function(data) {
-      callback(data);
-    });
-  }
+  // source code loaded via script tag in test runner html
+  // test utils with load_fixture method loaded in test runner
 }
 
 var assert = chai.assert;
 
 // variables to store fixture data for schema samples to test
 var schema_snippets = {}, derrida_schema;
-
+var xml_fixture;
 
 describe('schema.parse', function() {
 
@@ -45,9 +35,8 @@ describe('schema.parse', function() {
 
     var load_schema_snippets = new Promise(function(resolve, reject) {
       load_fixture('fixtures/schema_snippets.xml', function(data) {
-
          // if running on the command line, parse schema snippets from xml fixture
-        if (xml2js) {
+        if (typeof xml2js !== 'undefined') {
           var parser = new xml2js.Parser();
           parser.parseString(data, function (err, result) {
               for (var i = 0; i < result.schema_snippets.snippet.length; i++) {
@@ -59,13 +48,14 @@ describe('schema.parse', function() {
 
         // if running in the browser, use jquery to parse snippets from xml fixture
         } else {
-          var snippets = $(data).find('snippet');
+          var snippets = data.documentElement.getElementsByTagName("snippet");
           for (var i = 0; i < snippets.length; i++) {
-            var snippet = $(snippets[i]);
-            schema_snippets[snippet.attr('id')] = snippet.text();
+            var snippet = snippets[i];
+            schema_snippets[snippet.getAttribute('id')] = snippet.textContent;
           }
           resolve();
         }
+
       }); // end load fixture
     }); // end load_schema_snippets
 
