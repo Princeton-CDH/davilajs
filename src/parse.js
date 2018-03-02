@@ -12,12 +12,18 @@
     ]
 }
 
+field definition may optionally include additioal attributes, e.g.
+to designate primary and foreign keys:
+
+    {name: attr_name, type: type, attributes: 'foreign key'},
+
 */
 
 var mysql_regex = {
     tablename: /CREATE\sTABLE\s`(\w+)`[^;]*;/g,
     table_attribute: /^\s+`(\w+)`\s+(\w+[\d()]*)\s(.*),$/gm,
-    foreign_key: /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g
+    foreign_key: /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g,
+    primary_key: /PRIMARY\sKEY\s\(`([\w,`]+)`\)/g,
 };
 
 
@@ -33,19 +39,36 @@ function parse(schema) {
         var entity = {id: table_name, fields: Array()};
 
         // gather field details for the table
+
+        // identify primary key(s)
+        var primary_keys = [];
+        while ((pkeymatch = mysql_regex.primary_key.exec(table_details)) !== null) {
+            // split on `,` to identify all fields in composite primary keys
+            primary_keys = primary_keys.concat(pkeymatch[1].split("`,`"));
+        }
+
+        // gather foreign keys and relationships
+        var foreign_keys = []
+        while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
+            var foreign_key = keymatch[1], ref_table = keymatch[2];
+            relationships.push({'source': table_name, 'target': ref_table, 'value': 1})
+            foreign_keys.push(foreign_key);
+        }
+
         // look for attribute name and type
         while ((attrmatch = mysql_regex.table_attribute.exec(table_details)) !== null) {
             var attr_name = attrmatch[1], attr_type = attrmatch[2];
-            entity.fields.push({name: attr_name, type: attr_type});
+            var entity_info = {name: attr_name, type: attr_type};
+            if (primary_keys.includes(attr_name)) {
+                entity_info.attributes = 'primary key';
+            } else if (foreign_keys.includes(attr_name)) {
+                entity_info.attributes = 'foreign key';
+            }
+            entity.fields.push(entity_info);
         }
         entities.push(entity);
-
-        // look for foreign keys within the table definition
-        while ((keymatch = mysql_regex.foreign_key.exec(table_details)) !== null) {
-            relationships.push({'source': table_name, 'target': keymatch[2], 'value': 1})
-        }
-
     }
+
     return {
         'entities': entities,
         'relationships': relationships

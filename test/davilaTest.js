@@ -58,7 +58,7 @@ describe('davila.display', function() {
         })
       });
 
-      it('should display entity attributes and data types', function() {
+      it('should display entity field data types', function() {
          var graph = {
             entities: [
                 {id: 'something', fields: [
@@ -96,6 +96,34 @@ describe('davila.display', function() {
         d3.select('.entity .detail-toggle').dispatch("click");
         assert.include(d3.select('.entity').attr('class'), 'details');
       });
+
+      it('should display entity field attributes (primary/foreign key)', function() {
+         var graph = {
+            entities: [
+                {id: 'something', fields: [
+                  {name: "id", type: "int(11)", attributes: 'primary key'},
+                  {name: "person_id", type: "int(11)'", attributes: 'foreign key'},
+                  {name: "notes", type: "longtext"}
+                ]},
+            ],
+            relationships: []
+          };
+        davila.display(graph);
+
+        // check that additional information has been set as
+        // extra class on the field display element
+        d3.selectAll('li.fields').each(function(d, i) {
+          var field = graph.entities[0].fields[i];
+          if (field.attributes) {
+            assert.equal(d3.select(this).attr('class'),
+              'fields ' + field.attributes.replace(' ', '-'));
+          } else {
+            assert.equal(d3.select(this).attr('class'), 'fields');
+          }
+
+        });
+      });
+
 
       it('should display relationships as links', function() {
          var graph = {

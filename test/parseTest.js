@@ -84,6 +84,17 @@ describe('schema.parse', function() {
         assert.equal(table.fields[2].type, 'longtext');
         assert.equal(table.fields[3].type, 'int(11)');
   });
+  it('should recognize primary key', function() {
+        var info = parse(schema_snippets['footnotes_bibliography']);
+        var table = info.entities[0];
+        assert.equal(table.fields[0].attributes, 'primary key');
+  });
+  it('should handle composite primary key', function() {
+        var info = parse(schema_snippets['composite_primary_key']);
+        var table = info.entities[0];
+        assert.equal(table.fields[0].attributes, 'primary key');
+        assert.equal(table.fields[1].attributes, 'primary key');
+  });
   it('should find foreign key relationships', function() {
     var info = parse(schema_snippets['footnotes_bibliography']);
     assert.equal(info.relationships.length, 1);
@@ -107,4 +118,10 @@ describe('schema.parse', function() {
         assert.equal(info.entities.length, 49);
         assert.equal(info.relationships.length, 57);
   });
+  it('should identify foreign key attributes', function() {
+    var info = parse(schema_snippets['footnotes_bibliography']);
+    var table = info.entities[0];
+    assert.equal(table.fields[3].attributes, 'foreign key');
+  });
+
 });
