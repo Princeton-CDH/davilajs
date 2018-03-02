@@ -6,7 +6,9 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
 }
 
 
-function enable_schema_drop() {
+var editor = {
+
+  enable_schema_drop: function () {
     // turn on file drag & drop to allow users to load a schemas for display
 
 
@@ -30,6 +32,7 @@ function enable_schema_drop() {
     function drop() {
         d3.event.stopPropagation();
         d3.event.preventDefault();
+        d3.select(this).classed('active', false);
 
         var files = d3.event.dataTransfer.files;
 
@@ -54,12 +57,7 @@ function enable_schema_drop() {
         reader.onload = function(event) {
             // NOTE: using event.target instead of reader because
             // it's easier to stub in the unit tests
-            var schema_info = parse(event.target.result);
-            // if entities are found, then display them
-            if (schema_info.entities.length) {
-              davila.display(schema_info);
-            }
-          // TODO: display a message if no entities are found
+            editor.parse_and_display(event.target.result);
         }
         reader.readAsText(files[0]);
         // TODO error handling
@@ -72,21 +70,61 @@ function enable_schema_drop() {
         .on('dragleave', drag_inactive)
         .on('drop', drop);
 
-}
+  },
+
+  get_querystring_opts: function(location_search) {
+    // read query string parameters (if any) into an object
+    var query_opts = {};
+    // return if there is not at least one variable set
+    if (location_search.indexOf('=') == -1 ) {
+        return query_opts;
+    }
+    var query_string = location_search.replace('\?','').split('&');
+    query_string.forEach(function(element) {
+        var parts = element.split('=');
+        query_opts[parts[0]] = parts[1];
+    })
+    return query_opts;
+  },
+
+  parse_and_display: function(content) {
+    // parse and display content (whether loaded from dropped file or remote uri)
+    var schema_info = parse(content);
+    // if entities are found, then display them
+    if (schema_info.entities.length) {
+      davila.display(schema_info);
+    }
+  // todo: display a message if no entities are found
+  },
+
+  parse_uri: function (uri) {
+    // load remote uri as text, then parse and display as mysql schema
+    d3.text(uri, function(error, data) {
+        if (error) throw error;
+        editor.parse_and_display(data);
+    });
+  }
+
+};
 
 // automatically turn on drop support when running in a browser
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function(e) {
-        enable_schema_drop();
+        editor.enable_schema_drop();
     });
+
+    // load schema via query string parameter if set
+    var query_opts = editor.get_querystring_opts(window.location.search);
+    if (query_opts.uri) {
+        editor.parse_uri(query_opts.uri);
+    }
+
 }
 
 
 // export as node module when running under npm / command line
 if (typeof exports !== 'undefined') {
-    exports.editor = {
-        'enable_schema_drop': enable_schema_drop
-    };
+    exports.editor = editor;
 }
 
 

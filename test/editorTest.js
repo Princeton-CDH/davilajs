@@ -121,6 +121,7 @@ describe('editor.enable_schema_drop', function() {
   });
 
   it('should handle drop event (no files)', function() {
+    d3.select('body').attr('class', 'active');
     var drop_event = new CustomEvent('drop', {target: document.body});
     drop_event.preventDefault = sinon.spy();
     drop_event.stopPropagation = sinon.spy();
@@ -139,6 +140,7 @@ describe('editor.enable_schema_drop', function() {
     document.body.dispatchEvent(drop_event);
     assert(d3.event.preventDefault.called);
     assert(d3.event.stopPropagation.called);
+    assert.equal(d3.select('body').attr('class'), '');
   });
 
   it('should handle drop event (no content)', function() {
@@ -217,6 +219,91 @@ describe('editor.enable_schema_drop', function() {
 
     // undo stub
     filereader_readastext.restore();
+  });
+
+});
+
+
+describe('editor.get_querystring_opts', function() {
+
+  it('should not error with no query string params', function() {
+      editor.get_querystring_opts('');
+      editor.get_querystring_opts('?');
+      // no easy way to test empty object
+  });
+  it('should handle one query string param', function() {
+      var opts = editor.get_querystring_opts('?foo=bar');
+      assert.equal(opts.foo, 'bar');
+  });
+  it('should handle multiple query string params', function() {
+      var opts = editor.get_querystring_opts('?foo=bar&baz=qux');
+      assert.equal(opts.foo, 'bar');
+      assert.equal(opts.baz, 'qux');
+  });
+});
+
+describe('editor.parse_uri', function() {
+  var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
+
+   before(function(done) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+        done();
+  });
+
+  beforeEach(function() {
+    sandbox.stub(editor, 'parse_and_display');
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it('should load a uri for parse and display', function(){
+    // stub d3.text and set to call callback method
+    var d3_text = sandbox.stub(d3, 'text').callsArgWith(1, 0, derrida_schema);
+    var test_uri = 'http://example.com/schema.sql';
+    editor.parse_uri(test_uri);
+    assert(d3_text.calledWith(test_uri));
+    assert(editor.parse_and_display.called);
+    assert(editor.parse_and_display.calledWith(derrida_schema));
+
+    // todo: test error handling
+  });
+
+});
+
+
+describe('editor.parse_and_display', function() {
+  var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
+
+   before(function(done) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+        done();
+  });
+
+  beforeEach(function() {
+    sandbox.stub(davila, 'display');
+    // NOTE: not currently stubbing parse method (but probably should)
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it('should parse but not display empty schema', function() {
+    editor.parse_and_display('');
+    assert(! davila.display.called);
+  });
+
+  it('should parse and display schema with entities', function() {
+    editor.parse_and_display(derrida_schema);
+    assert(davila.display.called);
   });
 
 });

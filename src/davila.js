@@ -5,8 +5,8 @@ var davila = {
     // TODO: add documentation about expected data structure
 
     var svg = d3.select("svg.d3"),
-        width = + svg.attr("width"),
-        height = + svg.attr("height");
+        width = svg.node().getBoundingClientRect().width,
+        height = svg.node().getBoundingClientRect().height;
 
     // arrow head marker
     svg.append("defs").selectAll("marker")
@@ -31,6 +31,7 @@ var davila = {
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(200))
         .force("charge", d3.forceManyBody())
+        // .force("charge", d3.forceCollide(50))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
     var link = svg.append("g")
@@ -48,8 +49,14 @@ var davila = {
         .enter().append('div')
             .attr('class', 'entity')
             .style("border-color", function(d) { return color(d.group); })
+        .on("contextmenu", release_fixed_node)  // unfix on right click
+        .on("touchstart", function (e) {
+          // TODO: test this on tablet. release on two-finger tap
+          if (e.touches.length == 2) { release_fixed_node(); }
+        })
+        // .on("dblclick", release_fixed_node)
         .call(d3.drag()
-              .on("start", dragstarted)
+              .on("start", dragstarted)  // TODO test this works with touch
               .on("drag", dragged)
               .on("end", dragended));
 
@@ -117,6 +124,14 @@ var davila = {
 
       function dragended(d) {
         if (!d3.event.active) simulation.alphaTarget(0);
+        // set current node position as fixed position
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function release_fixed_node(d) {
+        d3.event.preventDefault();
+        // clear out fixed x and y node position
         d.fx = null;
         d.fy = null;
       }
