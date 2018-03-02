@@ -1,25 +1,10 @@
-if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
-  // tests running on command-line via mocha
+require('./setup')
 
-  chai = require('chai');
+if (typeof process === 'object') {  // node environment
   xml2js = require('xml2js');
-
-  load_fixture = require('./utils.js').load_fixture;
-
-  // load source code as module
   parse = require('../src/parse.js').parse;
-
-  // load source code as module
-  parse = require('../src/parse.js').parse;
-
-
-} else {
-  // tests running in the browser
-
-  // source code loaded via script tag in test runner html
 }
 
-var assert = chai.assert;
 
 // variables to store fixture data for schema samples to test
 var schema_snippets = {}, derrida_schema;

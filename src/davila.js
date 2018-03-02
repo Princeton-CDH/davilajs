@@ -2,6 +2,8 @@
 var davila = {
 
   display: function (graph) {
+    // TODO: add documentation about expected data structure
+
     var svg = d3.select("svg.d3"),
         width = + svg.attr("width"),
         height = + svg.attr("height");
@@ -56,12 +58,31 @@ var davila = {
           el.classed('collapsed', !el.classed('collapsed'));
         });
 
-
-      node.append("p")
+      // add entity id as div title
+      node.append("h2")
           .text(function(d) { return d.id; });
 
-      var fieldlist = node.append('ul')
-        .attr('class', 'fields');
+       // add a detail toggle button to each entity div
+      var toggle = node.append('div').attr('class', 'detail-toggle');
+      // on click, toggle detail display
+      toggle.on('click', function() {
+        var el = d3.select(this.parentNode);
+        el.classed('details', !el.classed('details'));
+      });
+
+    // for each entity, load the list of attributes and data types (hidden by default)
+    var fieldlist = node.append('ul')
+        .attr('class', 'fieldlist');
+
+    var fields = fieldlist.selectAll('li')
+        .data(function(d) { return 'fields' in d ? d.fields : []; })
+        .enter().append('li')
+         .attr('class', 'fields')
+          .append('span').attr('class', 'name').text(function(d) { return d.name });
+
+    // add field type to each li separately, rather than inside name span
+    fieldlist.selectAll('li')
+          .append('span').attr('class', 'type').text(function(d) { return d.type; });
 
       simulation
           .nodes(graph.entities)
@@ -99,6 +120,7 @@ var davila = {
         d.fx = null;
         d.fy = null;
       }
+
     },
 
   };

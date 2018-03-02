@@ -1,7 +1,7 @@
 // utility methods for unit testing
 // - load fixture methods for in-browser or command line
 
-if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main !== module) {
+if (typeof process === 'object') {
   // tests running on command-line via mocha
 
   fs = require('fs');
