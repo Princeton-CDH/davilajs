@@ -26,9 +26,6 @@ output {
     background: #efefef;
 }
 
-#file-list {
-    margin: 0 20px;
-}
 .block {
     position: absolute;
     display: block;
@@ -80,10 +77,41 @@ svg.d3, .container {
     z-index: 4;
 }
 
-/* ... needs transition */
-/* set collapsed entity to solid color */
-.entity.collapsed .fields {
-  display: none;
+.entity h2 {
+  padding-right: 2em;
+
+}
+
+.entity .detail-toggle {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  color: #b7b7b7; /* gray? lightgray? */
+  cursor: pointer;
+}
+.entity .detail-toggle::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f05a";  // font awesome info circle icon
+  font-size: 1.5em;
+}
+
+.entity .fieldlist {
+  margin: 0;
+
+  /* by default, do not display entity details/attributes */
+  height: 0;
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 1s ease-out;
+}
+
+/* display fields when details class is set on entity container */
+.entity.details .fieldlist {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
 }
 
 .fields {
@@ -91,7 +119,105 @@ svg.d3, .container {
   padding-left: 0;
 }
 
+/* display additional details after name */
+.fields span.name::after {
+  content: '';
+  padding-left: 0.5em;
+  color: gray;
+  font-variant: small-caps;
+}
+.fields.primary-key span.name::after {
+  content: 'primary key';
+}
+.fields.foreign-key span.name::after {
+  content: 'foreign key';
+}
+
+
 .fields span.type {
   float: right;
   margin-left: 10px;
 }
+
+
+/* grid layout for editor */
+body.davilajs {
+    display: grid;
+    grid-template-columns: [start] 205px [main] auto [end];
+    grid-template-rows: [start] 60px [main] auto [footer] 55px [end];
+    width: 100%;
+    height: 100%;
+    border: none;
+    grid-template-areas:
+        "header main"
+        "sidebar main"
+        "footer main";
+
+  &.active {
+    border: 8px dashed lightblue;
+   -webkit-border-radius: 22px;
+    -moz-border-radius: 22px;
+    border-radius: 22px;
+
+  }
+
+  svg.d3, .container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* minimized control panel (not yet in use) */
+  &.hide-nav {
+      grid-template-columns: [start] 55px [main] auto [end];
+  }
+
+  & > * {
+      padding: 10px;
+  }
+
+  header, footer, .controls {
+      border-right: 1px solid gray;
+
+      margin: 0;
+  }
+
+    header {
+        grid-area: header;
+        display: block;
+        border-bottom: 1px dashed gray;
+        min-height: auto;
+
+        .site-title {
+          line-height: normal;
+        }
+    }
+
+    footer {
+        grid-area: footer;
+        border-top: 1px solid gray;
+        font-size: 80%;
+        font-style: italic;
+    }
+    .controls {
+        grid-area: sidebar;
+
+    }
+
+    .content {
+        grid-area: main;
+        background-color: #efefef;
+        position: relative;
+    }
+
+    #file-list {
+      ul {
+        margin-left: 0;
+        list-style-type: none;
+      }
+    }
+}
+
+

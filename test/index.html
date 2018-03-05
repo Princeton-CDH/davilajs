@@ -3,20 +3,35 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Mocha Tests</title>
-    <link rel="stylesheet" href="{{ site.baseurl }}/node_modules/mocha/mocha.css">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <title>davila.js Mocha Unit Tests</title>
+    <link rel="stylesheet" href="{{ site.baseurl }}/vendor/mocha.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
-    <script src="{{ site.baseurl }}/node_modules/mocha/mocha.js"></script>
-    <script src="{{ site.baseurl }}/node_modules/chai/chai.js"></script>
+    <!-- currently required for davila_display method -->
+    <!-- TODO: create & destroy these in tests that need them? -->
+    <svg class="d3" style="display: none"/>
+    <div class="container" style="display: none"/>
+
+    <script src="{{ site.baseurl }}/vendor/mocha.js"></script>
+    <script src="{{ site.baseurl }}/vendor/chai.js"></script>
+    <script src="{{ site.baseurl }}/vendor/sinon-4.1.6.js"></script>
+    <!-- local test utils -->
+    <script src="setup.js"></script>
+    <script src="utils.js"></script>
+
     <script>mocha.setup('bdd')</script>
 
-    <!-- load code you want to test here -->
+    <!-- load source code to be tested -->
+    <script src="{{ site.baseurl }}/src/davila.js"></script>
     <script src="{{ site.baseurl }}/src/parse.js"></script>
-    <!-- load your test files here -->
+    <script src="{{ site.baseurl }}/src/editor.js"></script>
+
+    <!-- load test files -->
     <script src="parseTest.js"></script>
+    <script src="editorTest.js"></script>
+    <script src="davilaTest.js"></script>
 
     <script>
       mocha.run();
