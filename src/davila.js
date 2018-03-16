@@ -54,16 +54,10 @@ var davila = {
           // TODO: test this on tablet. release on two-finger tap
           if (e.touches.length == 2) { release_fixed_node(); }
         })
-        // .on("dblclick", release_fixed_node)
         .call(d3.drag()
               .on("start", dragstarted)  // TODO test this works with touch
               .on("drag", dragged)
               .on("end", dragended));
-
-      node.on("dblclick", function() {
-        var el = d3.select(this);
-          el.classed('collapsed', !el.classed('collapsed'));
-        });
 
       // add entity id as div title
       node.append("h2")
