@@ -196,9 +196,45 @@ describe('davila.display', function() {
         assert.equal(line.attr('y2'), link.target.y);
       });
 
-      it('should make note position sticky after drag');
+      it('should make note position sticky after drag' /*, function() {
+        // FIXME: this one is not working
+        // TODO: make drag handler methods available for testing separately
+        var simulation = davila.display(graph);
+        simulation.stop();
+        var node = simulation.nodes()[0];
+        var entity = d3.select('.entity');
+        var evt = new CustomEvent("mousedown", {target: entity});
+      // e.dispatchEvent(evt);
+      entity.node().dispatchEvent(evt);
+      // entity.dragstart();
 
-      it('should release sticky node position on right click');
+      }*/);
+
+      it('should release sticky node position on right click', function() {
+        var simulation = davila.display(graph);
+        simulation.stop();
+        simulation.on('tick')();
+
+        // get first simulation node and html entity div
+        var entity = d3.select('.entity');
+        var node = simulation.nodes()[0];
+
+        // custom event to simulate context menu
+        var rightclick_event = new CustomEvent('contextmenu', {target: entity});
+        rightclick_event.preventDefault = sinon.spy();
+        // patch event object into d3.event
+        sandbox.stub(d3, 'event').value(rightclick_event);
+        // set fixed x,y values to check they are cleared
+        node.fx = 1, node.fy = 2;
+
+        // retrieve contextmenu event handler and trigger with node as data
+        entity.on('contextmenu')(node);
+        // fixed x,y coords should be cleared
+        assert.equal(node.fx, null);
+        assert.equal(node.fy, null);
+        // default context menu behavior skipped
+        assert(d3.event.preventDefault.called);
+      });
 
 
 
