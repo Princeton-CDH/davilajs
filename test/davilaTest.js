@@ -2,6 +2,16 @@ require('./setup')
 
 if (typeof process === 'object') {  // node environment
   davila = require('../src/davila.js').davila;
+
+  // jsdom doesn't yet include CustomEvent invocation; wrap createEvent
+  // for compatibility with in-browser test code
+  function CustomEvent (name, opts = {}) {
+    let e = document.createEvent('HTMLEvents');
+    e.detail = opts.detail;
+    e.initEvent(name, opts, opts.bubbles, opts.cancelable);
+    return e;
+  }
+
 }
 
 describe('davila.display', function() {
@@ -26,7 +36,7 @@ describe('davila.display', function() {
 
         // stub out d3.forcesimulation; actually running it
         // causes command line tests to hang
-        sandbox.mock(d3, 'forceSimulation');
+        sandbox.spy(d3, 'forceSimulation');
         done();
     });
 
@@ -50,7 +60,7 @@ describe('davila.display', function() {
         };
         var simulation = davila.display(graph);
         // stop the simulation so tests don't hang waiting for it to run
-        // simulation.stop();
+        simulation.stop();
 
         // assert.equal(d3.select('.entity h2').text(), graph.entities[0].id);
         d3.selectAll('.entity h2').each(function(d, i) {
@@ -69,7 +79,8 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        davila.display(graph);
+        var simulation = davila.display(graph);
+        simulation.stop();
 
         // check that field names and types have been added to the document
         // for display
@@ -89,7 +100,8 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        davila.display(graph);
+        var simulation = davila.display(graph);
+        simulation.stop();
 
         assert.notInclude(d3.select('.entity').attr('class'), 'details');
 
@@ -108,7 +120,8 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        davila.display(graph);
+        var simulation = davila.display(graph);
+        simulation.stop();
 
         // check that additional information has been set as
         // extra class on the field display element
@@ -124,9 +137,8 @@ describe('davila.display', function() {
         });
       });
 
-
-      it('should display relationships as links', function() {
-         var graph = {
+     // simple entity relationship graph used for following tests
+     var graph = {
             entities: [
                 {id: 'something'},
                 {id: 'another'},
@@ -136,12 +148,59 @@ describe('davila.display', function() {
               {source: 'something', target: 'another'},
               {source: 'something', target: 'third'}
             ]
-        };
+      };
+
+      it('should display relationships as links', function() {
         var simulation = davila.display(graph);
+        simulation.stop();
         // should create link container
         assert.equal(d3.selectAll('g.links').size(), 1);
         // create one link for each relationship
         assert.equal(d3.selectAll('g.links line').size(), graph.relationships.length);
       });
+
+      it('should initialize d3 force simulation', function() {
+        var simulation = davila.display(graph);
+        simulation.stop();
+        assert(d3.forceSimulation.called);
+        // nodes and links should be set on the simulation based on graph
+        assert.equal(simulation.nodes().length, graph.entities.length);
+        assert.equal(simulation.force('link').links().length, graph.relationships.length);
+        // assert some function set for charge
+        assert(simulation.force('charge'));
+        // assert some function set for center
+        assert(simulation.force('center'));
+      });
+
+      it('should update node positions on simulation tick', function() {
+        var simulation = davila.display(graph);
+        simulation.stop();
+        // retrieve simulation 'tick' event handler and call it
+        simulation.on('tick')();
+
+        // get first node from the simulation and first entity div object
+        var node = simulation.nodes()[0];
+        var entity = d3.select('.entity');
+        // note: not taking into account offset width/height ?
+        // entity should be positioned based on node simulation
+        assert.equal(entity.style('left'), node.x + 'px');
+        assert.equal(entity.style('top'), node.y + 'px');
+
+        // get first link from simulation and first svg line
+        var link = simulation.force('link').links()[0];
+        var line = d3.select('.links line');
+        // should be positioned based on source/target nodes
+        assert.equal(line.attr('x1'), link.source.x);
+        assert.equal(line.attr('y1'), link.source.y);
+        assert.equal(line.attr('x2'), link.target.x);
+        assert.equal(line.attr('y2'), link.target.y);
+      });
+
+      it('should make note position sticky after drag');
+
+      it('should release sticky node position on right click');
+
+
+
 
 });

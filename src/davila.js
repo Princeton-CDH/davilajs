@@ -130,6 +130,8 @@ var davila = {
         d.fy = null;
       }
 
+
+      return simulation;
     },
 
   };
