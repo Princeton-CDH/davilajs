@@ -1,7 +1,11 @@
 
 var davila = {
 
-  display: function (graph) {
+  display: function (graph, options) {
+    // user-configurable options; by default, automatically start the simulation
+    var default_opts = {autostart: true},
+      options = Object.assign({}, default_opts, options);
+
     // TODO: add documentation about expected data structure
 
     var svg = d3.select("svg.d3"),
@@ -92,6 +96,10 @@ var davila = {
       simulation.force("link")
           .links(graph.relationships);
 
+     // by default, simulation will run; honor config option to disable
+      if (! options.autostart) {
+        simulation.stop();
+      }
 
       function ticked() {
         link

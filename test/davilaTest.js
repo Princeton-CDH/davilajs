@@ -58,10 +58,7 @@ describe('davila.display', function() {
             ],
             relationships: []
         };
-        var simulation = davila.display(graph);
-        // stop the simulation so tests don't hang waiting for it to run
-        simulation.stop();
-
+        var simulation = davila.display(graph, {autostart: false});
         // assert.equal(d3.select('.entity h2').text(), graph.entities[0].id);
         d3.selectAll('.entity h2').each(function(d, i) {
             assert.equal(d3.select(this).text(), graph.entities[i].id);
@@ -79,8 +76,7 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
 
         // check that field names and types have been added to the document
         // for display
@@ -100,8 +96,7 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
 
         assert.notInclude(d3.select('.entity').attr('class'), 'details');
 
@@ -120,8 +115,8 @@ describe('davila.display', function() {
             ],
             relationships: []
           };
-        var simulation = davila.display(graph);
-        simulation.stop();
+
+        var simulation = davila.display(graph, {autostart: false});
 
         // check that additional information has been set as
         // extra class on the field display element
@@ -151,8 +146,7 @@ describe('davila.display', function() {
       };
 
       it('should display relationships as links', function() {
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
         // should create link container
         assert.equal(d3.selectAll('g.links').size(), 1);
         // create one link for each relationship
@@ -160,8 +154,8 @@ describe('davila.display', function() {
       });
 
       it('should initialize d3 force simulation', function() {
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
+
         assert(d3.forceSimulation.called);
         // nodes and links should be set on the simulation based on graph
         assert.equal(simulation.nodes().length, graph.entities.length);
@@ -172,9 +166,10 @@ describe('davila.display', function() {
         assert(simulation.force('center'));
       });
 
+      it('should start the d3 force simulation by default');
+
       it('should update node positions on simulation tick', function() {
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
         // retrieve simulation 'tick' event handler and call it
         simulation.on('tick')();
 
@@ -198,7 +193,8 @@ describe('davila.display', function() {
 
       it('should make note position sticky after drag' /*, function() {
         // FIXME: this one is not working
-        // TODO: make drag handler methods available for testing separately
+        // TODO: make drag handler methods available for testing separately,
+        // test method directly
         var simulation = davila.display(graph);
         simulation.stop();
         var node = simulation.nodes()[0];
@@ -211,8 +207,7 @@ describe('davila.display', function() {
       }*/);
 
       it('should release sticky node position on right click', function() {
-        var simulation = davila.display(graph);
-        simulation.stop();
+        var simulation = davila.display(graph, {autostart: false});
         simulation.on('tick')();
 
         // get first simulation node and html entity div
