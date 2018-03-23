@@ -138,8 +138,23 @@ var davila = {
         d.fy = null;
       }
 
-
-      return simulation;
+      // return a display object that gives access to the force simulation
+      // object, node and link fields, and event handlers
+      return {
+        // d3 force simulation object
+        simulation: simulation,
+        // node divs and link svg line elements
+        node_divs: node,
+        link_lines: link,
+        handlers: {
+          // drag event handlers can't be accessed from simulation
+          // object directly, since they are configured with d3.drag
+          dragstarted: dragstarted,
+          dragged: dragged,
+          dragended: dragended,
+          release_fixed_node: release_fixed_node
+        }
+      }
     },
 
   };
