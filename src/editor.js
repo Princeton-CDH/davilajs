@@ -103,6 +103,17 @@ var editor = {
         if (error) throw error;
         editor.parse_and_display(data);
     });
+  },
+
+  init: function() {
+    // automatically turn on drop support when running in a browser
+    editor.enable_schema_drop();
+
+    // load schema via query string parameter if set
+    var query_opts = editor.get_querystring_opts(window.location.search);
+    if (query_opts.uri) {
+        editor.parse_uri(query_opts.uri);
+    }
   }
 
 };
@@ -110,17 +121,9 @@ var editor = {
 // automatically turn on drop support when running in a browser
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function(e) {
-        editor.enable_schema_drop();
+        editor.init();
     });
-
-    // load schema via query string parameter if set
-    var query_opts = editor.get_querystring_opts(window.location.search);
-    if (query_opts.uri) {
-        editor.parse_uri(query_opts.uri);
-    }
-
 }
-
 
 // export as node module when running under npm / command line
 if (typeof exports !== 'undefined') {

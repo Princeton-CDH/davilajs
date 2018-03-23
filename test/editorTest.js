@@ -307,3 +307,43 @@ describe('editor.parse_and_display', function() {
   });
 
 });
+
+
+describe('editor.init', function() {
+  var sandbox;
+  if (typeof jsdom !== 'undefined') {
+      jsdom();
+  }
+
+   before(function(done) {
+        sandbox = sinon.createSandbox(sinon.defaultConfig);
+
+        done();
+  });
+
+  beforeEach(function() {
+    sandbox.stub(editor, 'enable_schema_drop');
+    sandbox.stub(editor, 'parse_uri');
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it('should enable schema drop', function() {
+    editor.init();
+    assert(editor.enable_schema_drop.called);
+    assert(! editor.parse_uri.called);
+  });
+
+  it('should parse querystring from window location', function() {
+        global.window = {
+           location: {
+               search: '?uri=foo',
+           }
+       };
+       editor.init();
+       assert(editor.parse_uri.called);
+  });
+
+});
