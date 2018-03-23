@@ -2,8 +2,8 @@
 
 Interactive, Iterative Schema Documentation
 
-[![Build Status](https://travis-ci.org/Princeton-CDH/davilajs.svg?branch=master)](https://travis-ci.org/Princeton-CDH/davilajs)
-[![codecov](https://codecov.io/gh/Princeton-CDH/davilajs/branch/master/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/davilajs)
+[![Build Status](https://travis-ci.org/Princeton-CDH/davilajs.svg?branch=develop)](https://travis-ci.org/Princeton-CDH/davilajs)
+[![codecov](https://codecov.io/gh/Princeton-CDH/davilajs/branch/develop/graph/badge.svg)](https://codecov.io/gh/Princeton-CDH/davilajs)
 
 davila.js will be a complete reimplementation of [DAVILA](https://github.com/jabauer/DAVILA/), an interactive schema annotation tool, built in [Processing](https://processing.org/) and released in 2010.  The new version will be a browser-based tool with interactive customization features.
 
