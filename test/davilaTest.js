@@ -34,9 +34,11 @@ describe('davila.display', function() {
         document.body.appendChild(container);
         document.body.appendChild(svg);
 
-        // stub out d3.forcesimulation; actually running it
-        // causes command line tests to hang
+        // spy on d3.forcesimulation to allow inspection
         sandbox.spy(d3, 'forceSimulation');
+        // NOTE: if it is possible to spy on the simulation that is returned
+        // that would make some tests much easier
+
         done();
     });
 
@@ -156,7 +158,6 @@ describe('davila.display', function() {
       it('should initialize d3 force simulation', function() {
         var display_object = davila.display(graph, {autostart: false});
         var simulation = display_object.simulation;
-
         assert(d3.forceSimulation.called);
         // nodes and links should be set on the simulation based on graph
         assert.equal(simulation.nodes().length, graph.entities.length);
@@ -176,7 +177,15 @@ describe('davila.display', function() {
         assert.exists(display_obj.handlers.dragged);  // spot-check, not checking all
       });
 
-      it('should start the d3 force simulation by default');
+      it('should start the d3 force simulation by default', function() {
+        // FIXME: how to test this?
+        // stub doesn't spy on returned objects, otherwise could check
+        // whether or not simulation.stop is called;
+        // could check simulation.alpha() value, but requires delay
+        // and doesn't seem to work on command line
+        var display_object = davila.display(graph);
+        var display_object = davila.display(graph, {autostart: false});
+      });
 
       it('should update node positions on simulation tick', function() {
         var display_object = davila.display(graph, {autostart: false});
@@ -202,20 +211,52 @@ describe('davila.display', function() {
         assert.equal(line.attr('y2'), link.target.y);
       });
 
-      it('should make note position sticky after drag' /*, function() {
-        // FIXME: this one is not working
-        // TODO: make drag handler methods available for testing separately,
-        // test method directly
-        var simulation = davila.display(graph);
-        simulation.stop();
-        var node = simulation.nodes()[0];
-        var entity = d3.select('.entity');
-        var evt = new CustomEvent("mousedown", {target: entity});
-      // e.dispatchEvent(evt);
-      entity.node().dispatchEvent(evt);
-      // entity.dragstart();
+      it('should allow entities to be dragged', function() {
+        // standard d3 forcesimulation drag start / drag end behavior
 
-      }*/);
+        var display_obj = davila.display(graph, {autostart: false});
+        // grab first node from the simulation
+        var node = display_obj.simulation.nodes()[0];
+        // set x and y so there are values to compare against
+        node.x = 15, node.y = 22;
+
+        // drag start
+        // return mock event for handler to check
+        sandbox.stub(d3, 'event').value({active: true});
+        display_obj.handlers.dragstarted(node);
+        // alpha target unchanged
+        assert.equal(display_obj.simulation.alphaTarget(), 0);
+        assert.equal(node.fx, node.x);
+        assert.equal(node.fy, node.y);
+
+        // when not event active, alpha target changed
+        sandbox.stub(d3, 'event').value({active: false});
+        display_obj.handlers.dragstarted(node);
+        assert.equal(display_obj.simulation.alphaTarget(), 0.3);
+
+        // drag end
+        node.x = 1, node.y = 2;
+        display_obj.handlers.dragended(node);
+        assert.equal(display_obj.simulation.alphaTarget(), 0);
+        assert.equal(node.fx, node.x);
+        assert.equal(node.fy, node.y);
+        // alpha set to zero when event is not active
+        display_obj.simulation.alphaTarget(0.5);
+        sandbox.stub(d3, 'event').value({active: false});
+      });
+
+      it('should make entity position sticky after drag', function() {
+        var display_obj = davila.display(graph, {autostart: false});
+        // grab first node from the simulation
+        var node = display_obj.simulation.nodes()[0];
+        // create mock drag event and call drag handler
+        var mock_drag = {x: 15, y: 33};
+        sandbox.stub(d3, 'event').value(mock_drag);
+        display_obj.handlers.dragged(node);
+        // fixed x and y coordinates should be set from event
+        assert.equal(node.fx, mock_drag.x);
+        assert.equal(node.fy, mock_drag.y);
+      });
 
       it('should release sticky node position on right click', function() {
         var display_object = davila.display(graph, {autostart: false});
