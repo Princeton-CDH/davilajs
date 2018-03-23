@@ -5,7 +5,19 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   davila = require('../src/davila.js').davila;
 }
 
+/**
 
+ Main entry point for davila when running through jekyll for annotation
+ and display.  A MySQL schema can be loaded and parsed for display either
+ by dragging a local file and dropping it on the page or by loading
+ a web-accessible schema via URL, e.g.
+
+     http://localhost:4000/?uri=https://example.com/mysql-schema.sql
+
+ If the schema is parsed successfully and entities are found,
+ the information will be displayed with davila.display.
+
+*/
 var editor = {
 
   enable_schema_drop: function () {
