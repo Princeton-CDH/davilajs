@@ -1,4 +1,31 @@
+/*
 
+  Use davila.display to render an interactive entity relationship
+  graph, e.g. based on information parsed from a MySQL schema by
+  davila editor and parse code.
+
+  Expected graph data structure is a list of entities and a list of
+  relationships. Entities can include an optional list of fields; fields
+  can include a type and optional attributes to distinguish primary
+  or foreign key.
+
+  Example graph data structure:
+  {
+      entities: [
+          {id: 'something', fields: [
+            {name: "id", type: "int(11)", attributes: 'primary key'},
+            {name: "person_id", type: "int(11)'", attributes: 'foreign key'},
+            {name: "notes", type: "longtext"}
+          ]},
+      ],
+      relationships: [
+        {source: 'something', target: 'another'},
+        {source: 'something', target: 'third'}
+      ]
+    };
+
+
+*/
 var davila = {
 
   display: function (graph, options) {
