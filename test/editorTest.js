@@ -337,13 +337,20 @@ describe('editor.init', function() {
   });
 
   it('should parse querystring from window location', function() {
-        global.window = {
-           location: {
-               search: '?uri=foo',
-           }
-       };
-       editor.init();
-       assert(editor.parse_uri.called);
+      if (typeof(global) === 'undefined') {
+        // Not sure how to simulate setting a querystring
+        // when actually running in the browser, or if it is even
+        // possible. Skip this one in the browser, for now.
+        this.skip();
+      } else {
+            global.window = {
+               location: {
+                   search: '?uri=foo',
+               }
+           };
+           editor.init();
+           assert(editor.parse_uri.called);
+       }
   });
 
 });
