@@ -75,68 +75,111 @@ svg.d3, .container {
     position: absolute;
     border-style: solid;
     z-index: 4;
-}
 
-.entity h2 {
-  padding-right: 2em;
+    h2 {
+      padding-right: 2em;
+      margin-bottom: 0;
+    }
 
-}
+  .detail-toggle {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    color: #b7b7b7; /* gray? lightgray? */
+    cursor: pointer;
 
-.entity .detail-toggle {
-  position: absolute;
-  top: 2px;
-  right: 5px;
-  color: #b7b7b7; /* gray? lightgray? */
-  cursor: pointer;
-}
-.entity .detail-toggle::before {
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  content: "\f05a";  // font awesome info circle icon
-  font-size: 1.5em;
-}
-
-.entity .fieldlist {
-  margin: 0;
-
-  /* by default, do not display entity details/attributes */
-  height: 0;
-  visibility: hidden;
-  opacity: 0;
-  overflow: hidden;
-  transition: opacity 1s ease-out;
-}
-
-/* display fields when details class is set on entity container */
-.entity.details .fieldlist {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-}
-
-.fields {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-/* display additional details after name */
-.fields span.name::after {
-  content: '';
-  padding-left: 0.5em;
-  color: gray;
-  font-variant: small-caps;
-}
-.fields.primary-key span.name::after {
-  content: 'primary key';
-}
-.fields.foreign-key span.name::after {
-  content: 'foreign key';
-}
+    &::before {
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      content: "\f05a";  // font awesome info circle icon
+      font-size: 1.5em;
+    }
+  }
 
 
-.fields span.type {
-  float: right;
-  margin-left: 10px;
+  .details {
+    /* by default, do not display entity details/attributes */
+    height: 0;
+    visibility: hidden;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 1s ease-out;
+  }
+
+  /* display fields when details class is set on entity container */
+  &.details .details {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+    position: relative;
+
+  }
+
+  .fieldlist {
+    margin: 0;
+  }
+
+  .fields {
+    list-style-type: none;
+    padding-left: 0;
+
+    /* display additional details after name */
+    span.name::after {
+      content: '';
+      padding-left: 0.5em;
+      color: gray;
+      font-variant: small-caps;
+    }
+
+    &.primary-key span.name::after {
+      content: 'primary key';
+    }
+    &.foreign-key span.name::after {
+      content: 'foreign key';
+    }
+
+    span.type {
+      float: right;
+      margin-left: 10px;
+    }
+  }
+
+  // common styles for description display and textarea for editing it
+  .description, textarea.describe {
+    border: 0;
+    background-color: #efefef;
+    padding: 3px;
+    width: 98%;
+    margin: 0 1%;
+    resize: none;
+    font-size: 12px;  /* ensure consistent font size for display & edit */
+
+    /* TODO: maybe make heights consistent? but that takes up more space
+      than may be necessary */
+  }
+
+  .describe:focus {
+    background-color: white;
+    resize: auto;
+    overflow: auto;
+  }
+
+  .description {
+    &:empty, &.editable {
+      // hide description div when empty or when editing
+      display: none
+    }
+  }
+  // don't display textarea after description when description has content
+  .description + textarea {
+    display: none;
+  }
+
+  // display textarea when description is empty or when editing
+  .description:empty + textarea,  .description.editable + textarea {
+    display: block;
+  }
+
 }
 
 

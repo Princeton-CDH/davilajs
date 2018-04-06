@@ -94,6 +94,38 @@ var davila = {
       node.append("h2")
           .text(function(d) { return d.id; });
 
+      // container for details, not displayed by default
+      var node_details = node.append('div').attr('class', 'details');
+
+      // NOTE: should be possible to use contenteditable div, but
+      // adding it dynamically here results in it not actually being editable
+      // (and maybe browser support not far enough along anyway?)
+
+
+      node_details.append("div")
+        .attr('class', 'description')
+        .text('foo')
+        .on('click', function(d) {
+            d3.select(this).classed('editable', true);
+        });
+
+
+      // add text input for user to enter description
+      // NOTE: "value",
+      var node_describe = node_details.append("textarea")
+        .attr('class', 'describe')
+        .attr('placeholder', 'add entity description')
+        .attr('value', function(d) { return d.description; })
+        .on('blur', function(d) {
+          // store value in graph object
+          d.description = this.value;
+          // add to div for display and turn off div editable flag
+          d3.select(this.parentNode).select('.description')
+            .text(this.value)
+            .classed('editable', false);
+          console.log(d3.select(this.parentNode).select('.description'));
+        });
+
        // add a detail toggle button to each entity div
       var toggle = node.append('div').attr('class', 'detail-toggle');
       // on click, toggle detail display
@@ -102,8 +134,9 @@ var davila = {
         el.classed('details', !el.classed('details'));
       });
 
+
     // for each entity, load the list of attributes and data types (hidden by default)
-    var fieldlist = node.append('ul')
+    var fieldlist = node_details.append('ul')
         .attr('class', 'fieldlist');
 
     var fields = fieldlist.selectAll('li')
