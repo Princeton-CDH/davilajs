@@ -107,8 +107,6 @@ var davila = {
       // NOTE: should be possible to use contenteditable div, but
       // adding it dynamically here results in it not actually being editable
       // (and maybe browser support not far enough along anyway?)
-
-
       node_details.append("div")
         .attr('class', 'description')
         .text(function(d) { return d.description; })
@@ -122,7 +120,7 @@ var davila = {
       var node_describe = node_details.append("textarea")
         .attr('class', 'describe')
         .attr('placeholder', 'add entity description')
-        .attr('value', function(d) { return d.description; })
+        .text(function(d) { return d.description; })
         .on('blur', function(d) {
           // store value in graph object
           d.description = this.value;

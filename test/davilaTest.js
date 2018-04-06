@@ -294,6 +294,54 @@ describe('davila.display', function() {
         assert(d3.event.preventDefault.called);
       });
 
+    it('should display entity description if present', function() {
+         var graph = {
+            entities: [
+                {id: 'something', description: 'an ambiguous thing'},
+                {id: 'another'}
+            ],
+            relationships: []
+          };
+        davila.display(graph, {autostart: false});
+
+        // check that description has been added for display, with
+        // content from graph if present
+        d3.selectAll('div.description').each(function(d, i) {
+          assert.equal(d3.select(this).text(), graph.entities[i].description || '');
+        });
+        // also check that textarea has been added, with content if any
+        d3.selectAll('textarea.describe').each(function(d, i) {
+          assert.equal(d3.select(this).property('value'), graph.entities[i].description || '');
+        });
+      });
+
+    it('should allow entity description editing', function() {
+      var graph = {
+            entities: [
+                {id: 'something'}
+            ],
+            relationships: []
+          };
+        davila.display(graph, {autostart: false});
+
+        // click on description div should toggle editable class
+        var description = d3.select('.entity .description');
+        description.dispatch("click");
+        assert.include(description.attr('class'), 'editable');
+
+        // set value in textarea and then trigger blur
+        var textarea = d3.select('.entity .describe')
+        var description_text = 'my amazing description'
+        textarea.text(description_text).dispatch("blur");
+
+        // no longer editable
+        assert.notInclude(description.attr('class'), 'editable');
+        // edited value set in description div for display
+        assert.equal(description.text(), description_text);
+        // stored in graph object for eventual export/save
+        assert.equal(graph.entities[0].description, description_text);
+
+    });
 
 
 
