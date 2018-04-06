@@ -80,7 +80,14 @@ var davila = {
         .enter().append('div')
             .attr('class', 'entity')
             .style("border-color", function(d) { return color(d.group); })
-        .on("contextmenu", release_fixed_node)  // unfix on right click
+        .on("contextmenu", function(d) {
+          // unfix on shift + right click
+          // NOTE: requiring shift because context menu is too useful
+          // for development
+          if (d3.event.shiftKey) {
+            release_fixed_node(d);
+          }
+          })
         .on("touchstart", function (e) {
           // TODO: test this on tablet. release on two-finger tap
           if (e.touches.length == 2) { release_fixed_node(); }
@@ -104,7 +111,7 @@ var davila = {
 
       node_details.append("div")
         .attr('class', 'description')
-        .text('foo')
+        .text(function(d) { return d.description; })
         .on('click', function(d) {
             d3.select(this).classed('editable', true);
         });
@@ -123,7 +130,6 @@ var davila = {
           d3.select(this.parentNode).select('.description')
             .text(this.value)
             .classed('editable', false);
-          console.log(d3.select(this.parentNode).select('.description'));
         });
 
        // add a detail toggle button to each entity div

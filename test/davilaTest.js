@@ -277,6 +277,16 @@ describe('davila.display', function() {
 
         // retrieve contextmenu event handler and trigger with node as data
         entity.on('contextmenu')(node);
+        // if shift key is not pressed, nothing should be done
+        // fixed nodes should not be cleared
+        assert.notEqual(node.fx, null);
+        assert.notEqual(node.fy, null);
+        // default context menu behavior should not be skipped
+        assert(! d3.event.preventDefault.called);
+
+        // simulate right click with shift key pressed
+        rightclick_event.shiftKey = true;
+        entity.on('contextmenu')(node);
         // fixed x,y coords should be cleared
         assert.equal(node.fx, null);
         assert.equal(node.fy, null);
