@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import mysql from './parser'
+import { mysql } from './parser'
 
 export default {
   name: 'app',

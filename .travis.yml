@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+- "stable"
+script:
+- yarn test:unit
+cache:
+  yarn: true
+  directories:
+    - node_modules

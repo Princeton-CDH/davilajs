@@ -1,6 +1,6 @@
 const mysql = {
     regex: {
-        tablename: /CREATE\sTABLE\s`(\w+)`[^]*/g,
+        tablename: /CREATE\sTABLE\s`(\w+)`[^;]*;/g,
         table_attribute: /^\s+`(\w+)`\s+(\w+[\d()]*)\s(.*),$/gm,
         foreign_key: /FOREIGN\sKEY\s\(`(\w+)`\)\sREFERENCES\s`(\w+)`/g,
         primary_key: /PRIMARY\sKEY\s\(`([\w,`]+)`\)/g,
@@ -53,4 +53,6 @@ const mysql = {
     }
 }
 
-export default mysql
+export {
+    mysql,
+}
