@@ -37,7 +37,9 @@ export default {
       event.preventDefault()
     },
     parseSchema(schema) {
-      console.log(mysql.parse(schema))
+      let parsedSchema = mysql.parse(schema)
+    //   console.log(parsedSchema)
+      this.$emit('schema-loaded', parsedSchema)
     }
   },
 }
@@ -47,7 +49,7 @@ export default {
 .dropzone {
   width: 20%;
   height: 100%;
-  position: absolute;
+  display: inline-block;
   background-color: red;
 }
 </style>
