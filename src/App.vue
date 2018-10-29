@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <DropZone @schema-loaded="onSchemaLoaded"/>
-    <Viewer :entities="entities"/>
+    <Viewer :entities="entities" :relationships="relationships"/>
   </div>
 </template>
 
@@ -22,7 +22,12 @@ export default {
   },
   methods: {
     onSchemaLoaded(schema) {
-      this.entities = schema.entities
+      this.entities = schema.entities.map(entity => {
+          // set defaults so vue can detect changes made by d3 forceSimulation
+          entity.x = 0
+          entity.y = 0
+          return entity
+      })
       this.relationships = schema.relationships
     }
   }

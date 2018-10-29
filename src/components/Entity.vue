@@ -1,8 +1,8 @@
 <template>
-    <div class="entity">
+    <div class="entity" :style="entityStyles">
         <h2>{{ id }}</h2>
         <ul class="fields">
-            <li v-for="field in fields">
+            <li v-for="field in fields" :key="field.name">
                 {{ field.name }}
                 <span class="type">{{ field.type }}</span>
             </li>
@@ -14,7 +14,40 @@
 export default {
     props: {
         id: String,
-        fields: Array
+        fields: Array,
+        x: {
+            type: Number,
+            default: 0,
+        },
+        y: {
+            type: Number,
+            default: 0,
+        },
+        index: Number,
+        vx: Number,
+        vy: Number,
+    },
+    data() {
+        return {
+           el: null,
+        }
+    },
+    mounted() {
+        // store local copy so we can determine when $el is available
+        this.el  = this.$el;
+    },
+    computed: {
+        entityStyles: function() {
+            // only return once $el is available, since we need the size
+            if (this.el) {
+                return {
+                    // adjust by element size;
+                    // x,y should be the center of the div
+                    left: (this.x - this.$el.offsetWidth/2) + 'px',
+                    top: (this.y - this.$el.offsetHeight/2) + 'px',
+                }
+            }
+        }
     }
 }
 </script>
@@ -36,7 +69,7 @@ export default {
     }
 
    .fields {
-      // display:none;  /* for now; toggleable later */
+      // display:none;  for now; toggleable later
       list-style-type: none;
       padding-left: 0;
 
