@@ -1,17 +1,23 @@
 <template>
     <div class="viewer">
-        <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"  />
-        <svg class="d3"/>
+        <div class="entities">
+            <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"  />
+        </div>
+        <svg class="d3">
+            <Relation v-for="relationship in relationships" v-bind="relationship" :key="relationship.index" />
+        </svg>
     </div>
 </template>
 
 <script>
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force'
 import Entity from './Entity'
+import Relation from './Relation'
 
 export default {
     components: {
         Entity,
+        Relation,
     },
     props: {
         entities: Array,
@@ -26,28 +32,17 @@ export default {
         this.simulation = forceSimulation()
             .force("link", forceLink().id(function(d) { return d.id; }).distance(200))
             .force("charge", forceManyBody())
-            .force("charge", forceCollide(50))
-            .on("tick", this.ticked)
+            .force("charge", forceCollide(150))
             .stop()
+
+            // no "tick" event handler is needed, since vue watches and
+            // automatically updates entity and line positions
     },
     mounted() {
         var width = this.$el.clientWidth,
             height = this.$el.clientHeight;
 
         this.simulation.force("center", forceCenter(width / 2, height / 2))
-    },
-    methods:  {
-        ticked() {
-            // entity position styles automatically update based on
-            // x and y set by force simulation
-
-            // link positions still todo
-            // link
-            //     .attr("x1", function(d) { return d.source.x; })
-            //     .attr("y1", function(d) { return d.source.y; })
-            //     .attr("x2", function(d) { return d.target.x; })
-            //     .attr("y2", function(d) { return d.target.y; });
-        }
     },
     watch:  {
         entities: function(val) {
@@ -62,7 +57,6 @@ export default {
             // run ticked (tick() does not call trigger tick event)
 
             // this.simulation.tick()
-            // this.ticked()
             this.simulation.restart()
             return val;
         }
@@ -70,12 +64,27 @@ export default {
 }
 </script>
 
-<style>
-.viewer, svg.d3 {
+<style lang="scss">
+.viewer {
     position: absolute;
     bottom: 0;
     left: 20%;
     width: 80%;
     height: 100%;
+
+    .entities, svg.d3 {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* for testing line display */
+    svg {
+        // z-index: 5;
+    }
+
+
 }
 </style>
