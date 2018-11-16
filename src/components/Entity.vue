@@ -4,6 +4,7 @@
         <ul class="fields">
             <li v-for="field in fields" :key="field.name">
                 {{ field.name }}
+                <span class="label">{{ field.attributes }}</span>
                 <span class="type">{{ field.type }}</span>
             </li>
         </ul>
@@ -26,6 +27,7 @@ export default {
         index: Number,
         vx: Number,
         vy: Number,
+        attributes: String,
     },
     data() {
         return {
@@ -47,6 +49,9 @@ export default {
                     top: (this.y - this.$el.offsetHeight/2) + 'px',
                 }
             }
+        },
+        attr: function() {
+            return this.attributes.replace(' ', '-')
         }
     }
 }
@@ -77,6 +82,13 @@ export default {
           float: right;
           margin-left: 10px;
       }
+
+      .label {
+          padding-left: 0.5em;
+          color: gray;
+          font-variant: small-caps;
+      }
+
     }
 }
 </style>
