@@ -10,7 +10,6 @@ export default {
     },
     computed: {
         x1: function() {
-            console.log(this.source.x)
             return this.source.x
         },
         y1: function() {

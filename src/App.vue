@@ -28,6 +28,7 @@ export default {
           entity.y = 0
           return entity
       })
+      console.log(schema.relationships)
       this.relationships = schema.relationships
     }
   }

@@ -1,7 +1,10 @@
 <template>
-    <div class="entity" :style="entityStyles">
+    <div class="entity" :style="entityStyles" :class="{ expanded: isExpanded }">
         <h2>{{ id }}</h2>
-        <ul class="fields">
+         <a class="toggle" v-on:click="isExpanded = !isExpanded">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+        <ul class="fields" :style="fieldStyles">
             <li v-for="field in fields" :key="field.name">
                 {{ field.name }}
                 <span class="label">{{ field.attributes }}</span>
@@ -32,6 +35,7 @@ export default {
     data() {
         return {
            el: null,
+           isExpanded: false,
         }
     },
     mounted() {
@@ -50,9 +54,26 @@ export default {
                 }
             }
         },
+
         attr: function() {
             return this.attributes.replace(' ', '-')
-        }
+        },
+        displayHeight: function() {
+            // calculate display height; actual element scroll height
+            // if expanded, otherwise zero
+            if (this.isExpanded) {
+                return this.el.getElementsByTagName('ul')[0].scrollHeight;
+            }
+            return '0';
+        },
+        fieldStyles: function() {
+            // styles for field list within the entity
+            if (this.el) {
+                return {
+                    height: this.displayHeight + 'px',
+                }
+            }
+        },
     }
 }
 </script>
@@ -73,9 +94,39 @@ export default {
 
     }
 
+    ul {
+        // height set by fieldStyles property
+        // height: 0;
+        overflow: hidden;
+        transition: all 0.5s ease;
+    }
+
+    .toggle {
+        position: absolute;
+        right: 10px;
+        top: 40px;
+
+        transition: all 0.5s ease;
+        color: gray;
+    }
+
+    &.expanded {
+
+        z-index: 5;
+
+        ul {
+            // expanded height set based on elment height in fieldStyles
+            // property because CSS can't transition to auto height
+            // height: auto;
+        }
+
+        .toggle {
+            transform: rotate(180deg);
+        }
+    }
+
    .fields {
-      // display:none;  for now; toggleable later
-      list-style-type: none;
+          list-style-type: none;
       padding-left: 0;
 
       .type {
