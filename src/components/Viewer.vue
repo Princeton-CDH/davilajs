@@ -71,6 +71,7 @@ export default {
     left: 20%;
     width: 80%;
     height: 100%;
+    overflow: hidden;
 
     .entities, svg.d3 {
         position: absolute;
