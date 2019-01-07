@@ -66,12 +66,10 @@ export default {
 
 <style lang="scss">
 .viewer {
-    position: absolute;
-    bottom: 0;
-    left: 20%;
-    width: 80%;
-    height: 100%;
+    grid-area: main;
     overflow: hidden;
+    position: relative;
+    background-color: #efefef;
 
     .entities, svg.d3 {
         position: absolute;

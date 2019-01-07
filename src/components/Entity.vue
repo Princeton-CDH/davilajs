@@ -91,6 +91,7 @@ export default {
 
     h2 {
         padding-right: 2em;
+        margin: 0;
 
     }
 
@@ -104,7 +105,7 @@ export default {
     .toggle {
         position: absolute;
         right: 10px;
-        top: 40px;
+        top: 20px;
 
         transition: all 0.5s ease;
         color: gray;
@@ -126,8 +127,9 @@ export default {
     }
 
    .fields {
-          list-style-type: none;
-      padding-left: 0;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
 
       .type {
           float: right;
