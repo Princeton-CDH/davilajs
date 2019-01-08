@@ -25,9 +25,11 @@ export default {
     onDrop(ev) {
       ev.preventDefault()
       this.isActive = false
+      var i
+
       if (ev.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
-        for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+        for (i = 0; i < ev.dataTransfer.items.length; i++) {
           // If dropped items aren't files, reject them
           if (ev.dataTransfer.items[i].kind === 'file') {
             this.reader.readAsText(ev.dataTransfer.items[i].getAsFile())
@@ -35,7 +37,7 @@ export default {
         }
       } else {
         // Use DataTransfer interface to access the file(s)
-        for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+        for (i = 0; i < ev.dataTransfer.files.length; i++) {
           this.reader.readAsText(ev.dataTransfer.files[i])
         }
       }
@@ -44,15 +46,9 @@ export default {
       event.preventDefault()
       this.isActive = true
     },
-    onDragLeave(event) {
+    onDragLeave() {
       // exit without dropping; no longer active
       this.isActive = false
-    },
-    parseSchema(schema) {
-      let parsedSchema = mysql.parse(schema)
-      this.$emit('schema-loaded', parsedSchema)
-      // disable dropzone element once schema is loaded and parsed
-      this.disabled = true
     }
   },
 }
