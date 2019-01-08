@@ -6,13 +6,22 @@
     <Viewer :entities="entities" :relationships="relationships"/>
     <footer>an interactive schema annotation tool</footer>
 
-    <DropZone @schema-loaded="onSchemaLoaded"/>
+    <DropZone @schema-loaded="onSchemaLoaded" :enabled="dropzone.enabled"/>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import Router from 'vue-router'
+import { text } from 'd3-fetch'
+
 import DropZone from './components/DropZone'
 import Viewer from './components/Viewer'
+import { mysql } from './parser'
+
+
+Vue.use(Router)
+
 
 export default {
   components: {
@@ -23,11 +32,29 @@ export default {
     return {
       entities: [],
       relationships: [],
+      dropzone: {
+        enabled: true
+      }
+    }
+  },
+  mounted() {
+    // if a URI is specified as a query string at load time, parse and load
+    if (this.$route.query.uri) {
+      this.loadRemoteSchema(this.$route.query.uri)
     }
   },
   methods: {
-    onSchemaLoaded(schema) {
-      this.entities = schema.entities.map(entity => {
+    onSchemaLoaded(text) {
+      // takes text from a sql schema file
+       let schema = mysql.parse(text)
+
+       // bail out if parsing the text didn't return any entities
+       // NOTE: maybe eventually logging in control panel somewhere
+       if (! schema.entities.length) {
+         return
+       }
+
+       this.entities = schema.entities.map(entity => {
           // set defaults so vue can detect changes made by d3 forceSimulation
           entity.x = 0
           entity.y = 0
@@ -35,6 +62,15 @@ export default {
       })
       console.log(schema.relationships)
       this.relationships = schema.relationships
+      // disable dropzone
+      this.dropzone.enabled = false
+    },
+    loadRemoteSchema(uri) {
+      // load remote uri as text, then parse and display as mysql schema
+      var self = this
+      text(uri).then(function(text) {
+        self.onSchemaLoaded(text)
+      })
     }
   }
 }

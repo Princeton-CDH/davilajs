@@ -1,24 +1,25 @@
 <template>
-    <div class="dropzone" :class="{ active: isActive, disabled: disabled }" @drop="onDrop"
+    <div class="dropzone" :class="{ active: isActive, disabled: !enabled }" @drop="onDrop"
       @dragover="onDragOver" @dragleave="onDragLeave">
         <p>Drop a MySQL schema anywhere on the page to get started.</p>
       </div>
 </template>
 
 <script>
-import { mysql } from '../parser'
 
 export default {
+    props: {
+      enabled: Boolean
+  },
   data() {
     return {
       reader: Object,
       isActive: false,
-      disabled: false
     }
   },
   created() {
     this.reader = new FileReader()
-    this.reader.onload = event => this.parseSchema(event.target.result)
+    this.reader.onload = event => this.$emit('schema-loaded', event.target.result)
   },
   methods: {
     onDrop(ev) {
@@ -49,9 +50,7 @@ export default {
     },
     parseSchema(schema) {
       let parsedSchema = mysql.parse(schema)
-    //   console.log(parsedSchema)
       this.$emit('schema-loaded', parsedSchema)
-
       // disable dropzone element once schema is loaded and parsed
       this.disabled = true
     }

@@ -87,6 +87,7 @@ export default {
     margin: 2px;
     position: absolute;
     border-style: solid;
+    border-width: 2px;
     z-index: 4;
 
     h2 {
