@@ -1,6 +1,7 @@
 <template>
     <div class="entity" :style="entityStyles" :class="{ expanded: isExpanded }"
-        draggable="true" @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd">
+        draggable="true" @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd"
+        @click="onClick">
         <h2>{{ id }}</h2>
          <a class="toggle" v-on:click="isExpanded = !isExpanded">
             <i class="fas fa-chevron-down"></i>
@@ -136,6 +137,17 @@ export default {
 
         this.$emit('fix-entity-position', this)
         this.$emit('restart-simulation')
+      },
+      onClick(ev) {
+        // on shift + click, release a node that has been dragged
+        if (ev.shiftKey) {
+            this.fixed.x = null
+            this.fixed.y = null
+
+            this.$emit('release-entity-position', this)
+            this.$emit('restart-simulation')
+        }
+        return true
       }
 
     }

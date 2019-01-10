@@ -2,7 +2,9 @@
     <div class="viewer">
         <div class="entities">
             <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"
-                @fix-entity-position="fixEntityPosition" @restart-simulation="restartSimulation"/>
+                @fix-entity-position="fixEntityPosition"
+                @release-entity-position="releaseEntityPosition"
+                @restart-simulation="restartSimulation"/>
         </div>
         <svg class="d3">
             <Relation v-for="relationship in relationships" v-bind="relationship" :key="relationship.index" />
@@ -69,6 +71,13 @@ export default {
             let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
             d3_entity.fx = entity.fixed.x
             d3_entity.fy = entity.fixed.y
+        },
+        releaseEntityPosition(entity) {
+            // release an entity's fixed position in the entities array
+            // used by the d3 force network simulation
+            let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
+            d3_entity.fx = null
+            d3_entity.fy = null
         },
         restartSimulation() {
             this.simulation.alphaTarget(0.3).restart();
