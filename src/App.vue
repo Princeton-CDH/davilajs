@@ -2,6 +2,7 @@
   <div class="app">
     <header>davila.js</header>
     <div class="controls"> <!-- provisional -->
+      <p>Drag to arrange entities. Shift + click or two-finger touch to release.</p>
     </div>
     <Viewer :entities="entities" :relationships="relationships"/>
     <footer>an interactive schema annotation tool</footer>

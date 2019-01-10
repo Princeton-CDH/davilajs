@@ -1,6 +1,7 @@
 <template>
     <div class="entity" :style="entityStyles" :class="{ expanded: isExpanded }"
         draggable="true" @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd"
+        @touchstart="onDragStart" @touchmove="onDrag" @touchend="onDragEnd"
         @click="onClick">
         <h2>{{ id }}</h2>
          <a class="toggle" v-on:click="isExpanded = !isExpanded">
@@ -89,44 +90,73 @@ export default {
         },
     },
     methods: {
-       onDragStart(ev) {
+      getEventCoords(ev) {
+        // get event coordinates for mouse or first touch of touch event
+
+            // for a touch event, use the location of the first touch
+            if (ev.targetTouches != undefined) {
+                return {
+                    x: ev.targetTouches[0].pageX,
+                    y: ev.targetTouches[0].pageY
+                }
+            }
+            // otherwise, use event x, y
+            return {
+                x: ev.x,
+                y: ev.y
+            }
+        },
+      onDragStart(ev) {
+        // store current position as fixed position
         this.fixed.x = this.x;
         this.fixed.y = this.y;
 
-        // create an invisible ghost node to use for drag image
-        // to avoid doubling when ghost does not match exactly
-        if (!this.ghost) {
-            this.ghost = this.$el.cloneNode(true)
-            this.ghost.style.opacity = 0
-            document.body.appendChild(this.ghost);
+        let coords = this.getEventCoords(ev)
+
+        // on double touch, release fixed position
+        if (ev.touches != undefined && ev.touches.length == 2)  {
+            this.release()
+            ev.preventDefault()
         }
-        ev.dataTransfer.setDragImage(this.ghost, 0, 0);
-        // data transfer is required for Firefox or drag event does not fire
-        ev.dataTransfer.setData("text", ev.target.id)
-        ev.dataTransfer.effectAllowed = 'move'
+
+        // for drag events only (not present on touch events)
+        if (ev.dataTransfer != undefined) {
+            // create an invisible ghost node to use for drag image
+            // to avoid doubling when ghost does not match exactly
+            if (!this.ghost) {
+                this.ghost = this.$el.cloneNode(true)
+                this.ghost.style.opacity = 0
+                document.body.appendChild(this.ghost);
+            }
+            ev.dataTransfer.setDragImage(this.ghost, 0, 0);
+            // data transfer is required for Firefox or drag event does not fire
+            ev.dataTransfer.setData("text", ev.target.id)
+            ev.dataTransfer.effectAllowed = 'move'
+        }
 
         // capture the offset of the click within the entity div
         // at the beginning of the drag event
         var rect = ev.target.getBoundingClientRect();
-        this.dragOffset.x = ev.x - rect.left
-        this.dragOffset.y = ev.y - rect.top
+        this.dragOffset.x = coords.x - rect.left
+        this.dragOffset.y = coords.y - rect.top
 
         this.$parent.$emit('fix-entity-position', this)
+
       },
       onDrag(ev) {
+        let coords = this.getEventCoords(ev)
         // FIXME: in FF, drag event coordinates are 0,0
         // use dragover/mousemove event handler on the document/viewer to get coords?
-        if (ev.x == 0 && ev.y == 0) {
+        if (coords.x == 0 && coords.y == 0) {
             return
         }
-
         // - adjust click coordinates within the page to coordinates within the
         // view container (subtract parent element offsets)
         // - adjust click coordinate within the element to top left of entity
         // (drag offset calculated at start of drag event)
         // - adjust by element width and height to get center of element
-        this.fixed.x = ev.x - this.$parent.$el.offsetLeft - this.dragOffset.x + this.width/2
-        this.fixed.y = ev.y - this.$parent.$el.offsetTop - this.dragOffset.y + this.height/2
+        this.fixed.x = coords.x - this.$parent.$el.offsetLeft - this.dragOffset.x + this.width/2
+        this.fixed.y = coords.y - this.$parent.$el.offsetTop - this.dragOffset.y + this.height/2
 
         this.$emit('fix-entity-position', this)
         this.$emit('restart-simulation')
@@ -141,13 +171,17 @@ export default {
       onClick(ev) {
         // on shift + click, release a node that has been dragged
         if (ev.shiftKey) {
-            this.fixed.x = null
-            this.fixed.y = null
-
-            this.$emit('release-entity-position', this)
-            this.$emit('restart-simulation')
+            this.release()
         }
         return true
+      },
+      release() {
+        // release entity fixed position
+        this.fixed.x = null
+        this.fixed.y = null
+
+        this.$emit('release-entity-position', this)
+        this.$emit('restart-simulation')
       }
 
     }
