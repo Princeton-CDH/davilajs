@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import * as d3 from "d3"
 
 export default {
     props: {
@@ -101,6 +100,9 @@ export default {
             document.body.appendChild(this.ghost);
         }
         ev.dataTransfer.setDragImage(this.ghost, 0, 0);
+        // data transfer is required for Firefox or drag event does not fire
+        ev.dataTransfer.setData("text", ev.target.id)
+        ev.dataTransfer.effectAllowed = 'move'
 
         // capture the offset of the click within the entity div
         // at the beginning of the drag event
@@ -111,9 +113,12 @@ export default {
         this.$parent.$emit('fix-entity-position', this)
       },
       onDrag(ev) {
+        // FIXME: in FF, drag event coordinates are 0,0
+        // use dragover/mousemove event handler on the document/viewer to get coords?
         if (ev.x == 0 && ev.y == 0) {
             return
         }
+
         // - adjust click coordinates within the page to coordinates within the
         // view container (subtract parent element offsets)
         // - adjust click coordinate within the element to top left of entity

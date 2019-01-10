@@ -1,5 +1,5 @@
 <template>
-    <div class="viewer" >
+    <div class="viewer">
         <div class="entities">
             <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"
                 @fix-entity-position="fixEntityPosition" @restart-simulation="restartSimulation"/>
@@ -11,7 +11,6 @@
 </template>
 
 <script>
-import * as d3 from "d3"
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force'
 import Entity from './Entity'
 import Relation from './Relation'
@@ -28,7 +27,6 @@ export default {
     data() {
         return {
             simulation: {},
-            drag_enabled: false
         }
     },
     created() {
@@ -66,19 +64,15 @@ export default {
     },
     methods: {
         fixEntityPosition(entity) {
-            // this.simulation.alphaTarget(0.3).restart();
-            // if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            // store an entity's fixed position in the entities array
+            // used by the d3 force network simulation
             let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
-            // console.log(d3_entity)
             d3_entity.fx = entity.fixed.x
             d3_entity.fy = entity.fixed.y
-              // console.log(entity.id + ': ' + entity.fixed.x + ', ' + entity.fixed.y)
-            // this.simulation.alphaTarget(0.3).restart();
         },
         restartSimulation() {
             this.simulation.alphaTarget(0.3).restart();
         }
-
     }
 }
 </script>
