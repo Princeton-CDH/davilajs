@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="app" v-on:touchmove.prevent>
     <header>davila.js</header>
     <div class="controls"> <!-- provisional -->
       <p>Drag to arrange entities. Shift + click or two-finger touch to release.</p>
