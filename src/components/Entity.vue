@@ -1,5 +1,6 @@
 <template>
-    <div class="entity" :style="entityStyles" :class="{ expanded: isExpanded }">
+    <div class="entity" :style="entityStyles" :class="{ expanded: isExpanded }"
+        draggable="true" @dragstart="onDragStart" @drag="onDrag" @dragend="onDragEnd">
         <h2>{{ id }}</h2>
          <a class="toggle" v-on:click="isExpanded = !isExpanded">
             <i class="fas fa-chevron-down"></i>
@@ -15,18 +16,16 @@
 </template>
 
 <script>
+import * as d3 from "d3"
+
 export default {
     props: {
         id: String,
         fields: Array,
-        x: {
-            type: Number,
-            default: 0,
-        },
-        y: {
-            type: Number,
-            default: 0,
-        },
+        x: Number,
+        y: Number,
+        fx: Number,
+        fy: Number,
         index: Number,
         vx: Number,
         vy: Number,
@@ -36,6 +35,15 @@ export default {
         return {
            el: null,
            isExpanded: false,
+           fixed: {
+                x: this.fx,
+                y: this.fy
+           },
+           dragOffset: {
+                x: 0,
+                y: 0
+           },
+           ghost: null
         }
     },
     mounted() {
@@ -49,12 +57,17 @@ export default {
                 return {
                     // adjust by element size;
                     // x,y should be the center of the div
-                    left: (this.x - this.$el.offsetWidth/2) + 'px',
-                    top: (this.y - this.$el.offsetHeight/2) + 'px',
+                    left: ((this.fixed.x || this.x) - this.$el.offsetWidth/2) + 'px',
+                    top: ((this.fixed.y || this.y) - this.$el.offsetHeight/2) + 'px',
                 }
             }
         },
-
+        width: function() {
+            return this.$el.offsetWidth
+        },
+        height: function() {
+            return this.$el.offsetHeight
+        },
         attr: function() {
             return this.attributes.replace(' ', '-')
         },
@@ -74,7 +87,54 @@ export default {
                 }
             }
         },
+    },
+    methods: {
+       onDragStart(ev) {
+        this.fixed.x = this.x;
+        this.fixed.y = this.y;
+
+        // create an invisible ghost node to use for drag image
+        // to avoid doubling when ghost does not match exactly
+        if (!this.ghost) {
+            this.ghost = this.$el.cloneNode(true)
+            this.ghost.style.opacity = 0
+            document.body.appendChild(this.ghost);
+        }
+        ev.dataTransfer.setDragImage(this.ghost, 0, 0);
+
+        // capture the offset of the click within the entity div
+        // at the beginning of the drag event
+        var rect = ev.target.getBoundingClientRect();
+        this.dragOffset.x = ev.x - rect.left
+        this.dragOffset.y = ev.y - rect.top
+
+        this.$parent.$emit('fix-entity-position', this)
+      },
+      onDrag(ev) {
+        if (ev.x == 0 && ev.y == 0) {
+            return
+        }
+        // - adjust click coordinates within the page to coordinates within the
+        // view container (subtract parent element offsets)
+        // - adjust click coordinate within the element to top left of entity
+        // (drag offset calculated at start of drag event)
+        // - adjust by element width and height to get center of element
+        this.fixed.x = ev.x - this.$parent.$el.offsetLeft - this.dragOffset.x + this.width/2
+        this.fixed.y = ev.y - this.$parent.$el.offsetTop - this.dragOffset.y + this.height/2
+
+        this.$emit('fix-entity-position', this)
+        this.$emit('restart-simulation')
+      },
+      onDragEnd(ev) {
+        this.fixed.x = this.x
+        this.fixed.y = this.y
+
+        this.$emit('fix-entity-position', this)
+        this.$emit('restart-simulation')
+      }
+
     }
+
 }
 </script>
 
@@ -90,10 +150,22 @@ export default {
     border-width: 2px;
     z-index: 4;
 
+    /* set cursor to indicate entity can be dragged */
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+
+    /* Set "closed-hand" cursor during drag operation. */
+    &:active {
+        cursor: grabbing;
+        cursor: -moz-grabbing;
+        cursor: -webkit-grabbing;
+    }
+
     h2 {
         padding-right: 2em;
         margin: 0;
-
     }
 
     ul {

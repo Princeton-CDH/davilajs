@@ -1,7 +1,8 @@
 <template>
-    <div class="viewer">
+    <div class="viewer" >
         <div class="entities">
-            <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"  />
+            <Entity v-for="entity in entities" v-bind="entity" :key="entity.id"
+                @fix-entity-position="fixEntityPosition" @restart-simulation="restartSimulation"/>
         </div>
         <svg class="d3">
             <Relation v-for="relationship in relationships" v-bind="relationship" :key="relationship.index" />
@@ -10,6 +11,7 @@
 </template>
 
 <script>
+import * as d3 from "d3"
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force'
 import Entity from './Entity'
 import Relation from './Relation'
@@ -26,13 +28,14 @@ export default {
     data() {
         return {
             simulation: {},
+            drag_enabled: false
         }
     },
     created() {
         this.simulation = forceSimulation()
-            .force("link", forceLink().id(function(d) { return d.id; }).distance(200))
+            .force("link", forceLink().id(function(d) { return d.id; }).distance(100))
             .force("charge", forceManyBody())
-            .force("charge", forceCollide(150))
+            .force("charge", forceCollide(100))
             .stop()
 
             // no "tick" event handler is needed, since vue watches and
@@ -60,6 +63,22 @@ export default {
             this.simulation.restart()
             return val;
         }
+    },
+    methods: {
+        fixEntityPosition(entity) {
+            // this.simulation.alphaTarget(0.3).restart();
+            // if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
+            // console.log(d3_entity)
+            d3_entity.fx = entity.fixed.x
+            d3_entity.fy = entity.fixed.y
+              // console.log(entity.id + ': ' + entity.fixed.x + ', ' + entity.fixed.y)
+            // this.simulation.alphaTarget(0.3).restart();
+        },
+        restartSimulation() {
+            this.simulation.alphaTarget(0.3).restart();
+        }
+
     }
 }
 </script>
@@ -83,7 +102,6 @@ export default {
     svg {
         // z-index: 5;
     }
-
 
 }
 </style>

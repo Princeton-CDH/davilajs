@@ -9,11 +9,14 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "d3": "^5.7.0",
+    "d3-drag": "^1.2.3",
     "d3-fetch": "^1.1.2",
     "d3-force": "^1.1.2",
     "npm": "^6.4.1",
     "vue": "^2.5.17",
-    "vue-router": "^3.0.2"
+    "vue-router": "^3.0.2",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.3",
