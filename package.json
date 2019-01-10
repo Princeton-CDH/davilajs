@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit"
   },
   "dependencies": {
     "d3": "^5.7.0",
@@ -26,7 +26,9 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "chai": "^4.1.2",
     "eslint-plugin-mocha": "^5.2.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "node-sass": "^4.9.4",
+    "nyc": "^13.1.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.17"
   },
@@ -51,6 +53,28 @@
     "plugins": {
       "autoprefixer": {}
     }
+  },
+ "nyc": {
+
+    "include": [
+      "src/*.{js,vue}",
+      "src/**/*.{js,vue}"
+    ],
+    "exclude": [
+      "src/main.js",
+      "node_modules/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "extension": [
+      ".js",
+      ".vue"
+    ],
+    "cache": true,
+    "all": true
   },
   "browserslist": [
     "> 1%",
