@@ -1,8 +1,12 @@
 language: node_js
 node_js:
 - "stable"
+before_script:
+  - yarn add codecov
 script:
-- yarn test:unit
+  - yarn test:unit
+after_success:
+  - yarn codecov
 cache:
   yarn: true
   directories:
