@@ -4,7 +4,7 @@ node_js:
 before_script:
   - yarn add codecov
 script:
-  - yarn test:unit
+  - yarn unit
 after_success:
   - yarn codecov
 cache:
