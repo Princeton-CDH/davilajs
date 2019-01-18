@@ -20,16 +20,14 @@ import DropZone from './components/DropZone'
 import Viewer from './components/Viewer'
 import { mysql } from './parser'
 
-
 Vue.use(Router)
-
 
 export default {
   components: {
     DropZone,
     Viewer
   },
-  data() {
+  data () {
     return {
       entities: [],
       relationships: [],
@@ -38,38 +36,38 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     // if a URI is specified as a query string at load time, parse and load
     if (this.$route.query.uri) {
       this.loadRemoteSchema(this.$route.query.uri)
     }
   },
   methods: {
-    onSchemaLoaded(text) {
+    onSchemaLoaded (text) {
       // takes text from a sql schema file
-       let schema = mysql.parse(text)
+      let schema = mysql.parse(text)
 
-       // bail out if parsing the text didn't return any entities
-       // NOTE: maybe eventually logging in control panel somewhere
-       if (! schema.entities.length) {
-         return
-       }
+      // bail out if parsing the text didn't return any entities
+      // NOTE: maybe eventually logging in control panel somewhere
+      if (!schema.entities.length) {
+        return
+      }
 
-       this.entities = schema.entities.map(entity => {
-          // set defaults so vue can detect changes made by d3 forceSimulation
-          entity.x = 0
-          entity.y = 0
-          return entity
+      this.entities = schema.entities.map(entity => {
+        // set defaults so vue can detect changes made by d3 forceSimulation
+        entity.x = 0
+        entity.y = 0
+        return entity
       })
       console.log(schema.relationships)
       this.relationships = schema.relationships
       // disable dropzone
       this.dropzone.enabled = false
     },
-    loadRemoteSchema(uri) {
+    loadRemoteSchema (uri) {
       // load remote uri as text, then parse and display as mysql schema
       var self = this
-      text(uri).then(function(text) {
+      text(uri).then(function (text) {
         self.onSchemaLoaded(text)
       })
     }

@@ -8,21 +8,21 @@
 <script>
 
 export default {
-    props: {
-      enabled: Boolean
+  props: {
+    enabled: Boolean
   },
-  data() {
+  data () {
     return {
       reader: Object,
-      isActive: false,
+      isActive: false
     }
   },
-  created() {
+  created () {
     this.reader = new FileReader()
     this.reader.onload = event => this.$emit('schema-loaded', event.target.result)
   },
   methods: {
-    onDrop(ev) {
+    onDrop (ev) {
       ev.preventDefault()
       this.isActive = false
       var i
@@ -42,15 +42,15 @@ export default {
         }
       }
     },
-    onDragOver(event) {
+    onDragOver (event) {
       event.preventDefault()
       this.isActive = true
     },
-    onDragLeave() {
+    onDragLeave () {
       // exit without dropping; no longer active
       this.isActive = false
     }
-  },
+  }
 }
 </script>
 
@@ -80,7 +80,6 @@ export default {
   p {
     font-size: 16pt;
   }
-
 
   }
 </style>

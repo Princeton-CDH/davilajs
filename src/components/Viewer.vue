@@ -18,71 +18,71 @@ import Entity from './Entity'
 import Relation from './Relation'
 
 export default {
-    components: {
-        Entity,
-        Relation,
-    },
-    props: {
-        entities: Array,
-        relationships: Array,
-    },
-    data() {
-        return {
-            simulation: {},
-        }
-    },
-    created() {
-        this.simulation = forceSimulation()
-            .force("link", forceLink().id(function(d) { return d.id; }).distance(100))
-            .force("charge", forceManyBody())
-            .force("charge", forceCollide(100))
-            .stop()
-
-            // no "tick" event handler is needed, since vue watches and
-            // automatically updates entity and line positions
-    },
-    mounted() {
-        var width = this.$el.clientWidth,
-            height = this.$el.clientHeight;
-
-        this.simulation.force("center", forceCenter(width / 2, height / 2))
-    },
-    watch:  {
-        entities: function(val) {
-            // when entities are initialized, populate the simulation
-
-            this.simulation.nodes(this.entities)
-
-            this.simulation.force("link")
-                .links(this.relationships)
-
-            // for testing: instead of restart, can tick once and
-            // run ticked (tick() does not call trigger tick event)
-
-            // this.simulation.tick()
-            this.simulation.restart()
-            return val;
-        }
-    },
-    methods: {
-        fixEntityPosition(entity) {
-            // store an entity's fixed position in the entities array
-            // used by the d3 force network simulation
-            let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
-            d3_entity.fx = entity.fixed.x
-            d3_entity.fy = entity.fixed.y
-        },
-        releaseEntityPosition(entity) {
-            // release an entity's fixed position in the entities array
-            // used by the d3 force network simulation
-            let d3_entity = this.entities.filter(ent => ent.id == entity.id)[0]
-            d3_entity.fx = null
-            d3_entity.fy = null
-        },
-        restartSimulation() {
-            this.simulation.alphaTarget(0.3).restart();
-        }
+  components: {
+    Entity,
+    Relation
+  },
+  props: {
+    entities: Array,
+    relationships: Array
+  },
+  data () {
+    return {
+      simulation: {}
     }
+  },
+  created () {
+    this.simulation = forceSimulation()
+      .force('link', forceLink().id(function (d) { return d.id }).distance(100))
+      .force('charge', forceManyBody())
+      .force('charge', forceCollide(100))
+      .stop()
+
+    // no "tick" event handler is needed, since vue watches and
+    // automatically updates entity and line positions
+  },
+  mounted () {
+    let width = this.$el.clientWidth
+    let height = this.$el.clientHeight
+
+    this.simulation.force('center', forceCenter(width / 2, height / 2))
+  },
+  watch: {
+    entities: function (val) {
+      // when entities are initialized, populate the simulation
+
+      this.simulation.nodes(this.entities)
+
+      this.simulation.force('link')
+        .links(this.relationships)
+
+      // for testing: instead of restart, can tick once and
+      // run ticked (tick() does not call trigger tick event)
+
+      // this.simulation.tick()
+      this.simulation.restart()
+      return val
+    }
+  },
+  methods: {
+    fixEntityPosition (entity) {
+      // store an entity's fixed position in the entities array
+      // used by the d3 force network simulation
+      let d3entity = this.entities.filter(ent => ent.id === entity.id)[0]
+      d3entity.fx = entity.fixed.x
+      d3entity.fy = entity.fixed.y
+    },
+    releaseEntityPosition (entity) {
+      // release an entity's fixed position in the entities array
+      // used by the d3 force network simulation
+      let d3entity = this.entities.filter(ent => ent.id === entity.id)[0]
+      d3entity.fx = null
+      d3entity.fy = null
+    },
+    restartSimulation () {
+      this.simulation.alphaTarget(0.3).restart()
+    }
+  }
 }
 </script>
 

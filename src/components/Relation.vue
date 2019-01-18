@@ -4,24 +4,24 @@
 
 <script>
 export default {
-    props: {
-        source: Object,
-        target: Object,
+  props: {
+    source: Object,
+    target: Object
+  },
+  computed: {
+    x1: function () {
+      return this.source.x
     },
-    computed: {
-        x1: function() {
-            return this.source.x
-        },
-        y1: function() {
-            return this.source.y
-        },
-        x2: function() {
-            return this.target.x
-        },
-        y2: function() {
-            return this.target.y
-        }
+    y1: function () {
+      return this.source.y
+    },
+    x2: function () {
+      return this.target.x
+    },
+    y2: function () {
+      return this.target.y
     }
+  }
 }
 </script>
 
