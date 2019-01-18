@@ -13,7 +13,7 @@ export default {
   },
   data () {
     return {
-      reader: Object,
+      reader: {},
       isActive: false
     }
   },
