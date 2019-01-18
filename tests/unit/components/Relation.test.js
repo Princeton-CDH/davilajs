@@ -12,7 +12,9 @@ describe('Relation', () => {
 	})
 
   it('renders a line', () => {
-    expect(wrapper.html()).toContain('<line	')
+    expect(wrapper.html())
+    	.toContain('<line x1="' + wrapper.vm.x1 + '" y1="' + wrapper.vm.y1 + '" ' +
+    		'x2="' + wrapper.vm.x2 + '" y2="' + wrapper.vm.y2 + '">')
   }),
   it('computes x1 from source x', () => {
   	expect(wrapper.vm.x1).toBe(wrapper.vm.source.x)
