@@ -78,7 +78,7 @@ export default {
       if (this.isExpanded) {
         return this.el.getElementsByTagName('ul')[0].scrollHeight
       }
-      return '0'
+      return 0
     },
     fieldStyles: function () {
       // styles for field list within the entity
@@ -140,7 +140,7 @@ export default {
       this.dragOffset.x = coords.x - rect.left
       this.dragOffset.y = coords.y - rect.top
 
-      this.$parent.$emit('fix-entity-position', this)
+      this.$emit('fix-entity-position', this)
     },
     onDrag (ev) {
       let coords = this.getEventCoords(ev)
